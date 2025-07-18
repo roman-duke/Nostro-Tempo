@@ -1,0 +1,25 @@
+{
+  "name": "nostro-tempo",
+  "version": "1.0.0",
+  "description": "\"Lorem Ipsum Idor\"",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/db/connection.ts",
+    "seed": "tsc db/seed.ts --noEmit true && tsx db/seed.ts"
+  },
+  "author": "Roman Donald <romanunuose@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "mysql2": "^3.11.4",
+    "uuid": "^11.0.3"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.10.2",
+    "concurrently": "^9.1.0",
+    "typescript": "^5.6.3"
+  }
+}
