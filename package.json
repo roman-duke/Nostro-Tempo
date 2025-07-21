@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/db/connection.ts",
+    "dev": "tsx watch src/index.ts",
     "seed": "tsc db/seed.ts --noEmit true && tsx db/seed.ts"
   },
   "author": "Roman Donald <romanunuose@gmail.com>",

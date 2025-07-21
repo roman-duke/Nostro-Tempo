@@ -1,7 +1,7 @@
 import * as mysql from "mysql2";
 import { readFileSync } from "fs";
 import "dotenv/config";
-import { questions, categories } from "./mock";
+import { questions, categories } from "./mock.js";
 
 // Read SQL init query
 const initQueries = readFileSync("./db/init.sql", {

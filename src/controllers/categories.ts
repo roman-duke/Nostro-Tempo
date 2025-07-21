@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
-import { categoriesService } from "../services/categoriesService.js";
+import { categoriesService } from "../services/categories.js";
 
 export const categoriesController = {
-  getCategories: (req: Request, res: Response) => {
-    const categories = categoriesService.getAllCategories();
+  getCategories: async (req: Request, res: Response) => {
+    const categories = await categoriesService.getAllCategories();
+
     res.status(200).json(categories);
   },
 

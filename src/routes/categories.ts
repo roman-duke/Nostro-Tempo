@@ -1,8 +1,9 @@
 // Categories route module.
 import express from "express"
+import { categoriesController } from "../controllers/categories.js";
 
-const categoriesRouter = express.Router();
+const categoriesRoute = express.Router();
 
-categoriesRouter.get('/', );
+categoriesRoute.get('/categories', categoriesController.getCategories );
 
-export  { categoriesRouter }
+export  { categoriesRoute }
