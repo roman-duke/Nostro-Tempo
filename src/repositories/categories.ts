@@ -15,6 +15,14 @@ export const CategoriesRepository = {
   },
 
   async create(body: Category) {
-    return null;
+    const [results] = await query(
+      `INSERT INTO categories
+       (name, image, description)
+       VALUES (?, ?, ?)
+      `,
+      Object.values(body),
+    )
+
+    console.log(results);
   }
 }

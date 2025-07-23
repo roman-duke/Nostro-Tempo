@@ -6,4 +6,6 @@ const categoriesRoute = express.Router();
 
 categoriesRoute.get('/categories', categoriesController.getCategories );
 
+categoriesRoute.post('/categories', categoriesController.createCategory);
+
 export  { categoriesRoute }
