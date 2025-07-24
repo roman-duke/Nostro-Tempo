@@ -15,8 +15,25 @@ export const categoriesController = {
     res.status(200).json(categories);
   },
 
-  getCategory: (req: Request, res: Response) => {
-    const id = Number(req.params.categoryId);
-    // const category = categorieService.getCategory(id);
+  getCategory: async (req: Request, res: Response) => {
+    const id = req.params.categoryId;
+    const category = await categoriesService.getCategory(id);
+
+    res.status(200).json(category);
+  },
+
+  updateCategory: async (req: Request, res: Response) => {
+    const id = req.params.categoryId;
+    const payload = req.body;
+    const category = await categoriesService.updateCategory(id, payload);
+
+    res.status(200).json(category);
+  },
+
+  deleteCategory: async (req: Request, res: Response) => {
+    const id = req.params.categoryId;
+    await categoriesService.deleteCategory(id);
+
+    res.status(204);
   }
 }

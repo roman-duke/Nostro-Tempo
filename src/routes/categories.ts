@@ -8,4 +8,8 @@ categoriesRoute.get('/categories', categoriesController.getCategories );
 
 categoriesRoute.post('/categories', categoriesController.createCategory);
 
+categoriesRoute.delete('/categories/:categoryId', categoriesController.deleteCategory);
+
+categoriesRoute.patch('/categories/:categoryId', categoriesController.updateCategory);
+
 export  { categoriesRoute }

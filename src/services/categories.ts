@@ -12,8 +12,18 @@ export const categoriesService = {
     return data;
   },
 
-  getCategory: async () => {
-    const data = await CategoriesRepository.findById('');
+  getCategory: async (id: string) => {
+    const data = await CategoriesRepository.findById(id);
+    return data;
+  },
+
+  updateCategory: async (id: string, payload: Partial<Category>) => {
+    const data = await CategoriesRepository.update(id, payload);
+    return data;
+  },
+
+  deleteCategory: async (id: string) => {
+    const data = await CategoriesRepository.delete(id);
     return data;
   }
 }
