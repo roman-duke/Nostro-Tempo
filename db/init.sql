@@ -13,14 +13,9 @@ CREATE TABLE categories (
 
 CREATE TABLE questions (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(255) UNIQUE NOT NULL,
   description VARCHAR(500) NOT NULL,
-  option_a VARCHAR(100) NOT NULL,
-  option_b VARCHAR(100) NOT NULL,
-  option_c VARCHAR(100) NOT NULL,
-  option_d VARCHAR(100) NOT NULL,
   difficulty ENUM('EASY', 'MEDIUM', 'HARD') NOT NULL,
-  correct_answer VARCHAR(100),
+  correct_option_id UUID NOT NULL,
   category_id INT NOT NULL,
   CONSTRAINT fk_category FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
 );
