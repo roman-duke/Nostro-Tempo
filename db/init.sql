@@ -24,6 +24,14 @@ CREATE TABLE questions (
   CONSTRAINT fk_category FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
 );
 
+CREATE TABLE question_options (
+  id BINARY(16) PRIMARY KEY DEFAULT (UUID_TO_BIN(UUID())),
+  question_id BINARY(16) NOT NULL,
+  option_description ENUM(TEXT, LONGBLOB) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+)
+
 -- CREATE TABLE trivia_sessions (
 --   trivia_session_id UUID PRIMARY KEY,
 --   user_id UUID NOT NULL,
