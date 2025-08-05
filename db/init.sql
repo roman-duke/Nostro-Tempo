@@ -5,7 +5,7 @@ CREATE DATABASE ruday;
 USE ruday;
 
 CREATE TABLE categories (
-  id UUID PRIMARY KEY,
+  id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(255) UNIQUE NOT NULL,
   image VARCHAR(255) UNIQUE NOT NULL,
   description TEXT NOT NULL
@@ -15,10 +15,11 @@ CREATE TABLE categories (
 
 CREATE TABLE questions (
   id BINARY(16) PRIMARY KEY DEFAULT (UUID_TO_BIN(UUID())),
+  name VARCHAR(255) UNIQUE NOT NULL,
   description TEXT NOT NULL,
   difficulty ENUM('EASY', 'MEDIUM', 'HARD') NOT NULL,
-  correct_option_id BINARY(16) NOT NULL,
-  category_id BINARY(16) NOT NULL,
+  correct_option_id BINARY(16),
+  category_id INT NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_category FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
@@ -30,7 +31,8 @@ CREATE TABLE question_options (
   option_description ENUM(TEXT, LONGBLOB) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-)
+  CONSTRAINT fk_question FOREIGN KEY (question_id) REFERENCES questions(id) ON DELETE CASCADE
+);
 
 -- CREATE TABLE trivia_sessions (
 --   trivia_session_id UUID PRIMARY KEY,
