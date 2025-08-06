@@ -34,11 +34,6 @@ const db = mysql.createConnection({
   password: process.env.MYSQL_PASSWORD,
 });
 
-db.connect((err) => {
-  if (err) throw err;
-  console.log("Connected!");
-});
-
 async function createSchema() {
   console.log("Creating database schema for ruday...");
 
@@ -83,8 +78,15 @@ async function seedTables() {
 
 // Leveraging an IIFE since in most versions of Javascript, a top level await is not valid syntax
 (async function () {
-  await createSchema();
-  await seedTables()
-    .then(() => console.log("Tables successfully seeded."))
-    .then(() => process.exit());
+  db.connect(async (err) => {
+    if (err) {
+      console.error(err);
+    }
+
+    console.log("Connected!");
+    await createSchema();
+    await seedTables()
+      .then(() => console.log("Tables successfully seeded."))
+      .then(() => process.exit());
+  })
 })();
