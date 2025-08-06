@@ -1,4 +1,6 @@
-export interface Question {
+import { RowDataPacket } from "mysql2";
+
+export interface Question extends RowDataPacket {
   id: string,
   category_id: string,
   description: string,

@@ -27,7 +27,7 @@ export const categoriesController = {
     const payload = req.body;
     const category = await categoriesService.updateCategory(id, payload);
 
-    res.status(200).json(category);
+    res.status(201).json(category);
   },
 
   deleteCategory: async (req: Request, res: Response) => {
