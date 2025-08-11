@@ -30,6 +30,14 @@ export const AnswerChoicesRepository = {
     return results;
   },
 
+  async delete(id: string) {
+    await query(
+      `DELETE FROM answer_options
+       WHERE id = ${id};
+      `
+    )
+  }
+
   // async update(id: string, body: Partial<AnswerChoice>) {
   //   // Take the partial or full form of the answer option object
   //   // and then perform an update using raw sql

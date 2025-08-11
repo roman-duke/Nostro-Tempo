@@ -48,6 +48,7 @@ async function seedTables() {
   // Seed the categories table first, since there's a foreign key in questions that references it
   console.log("Running SQL seed...");
   seedQueries.forEach(function (seedQuery, idx) {
+    console.log(idx);
     if (idx == 1) {
       categories.map((category) => {
         db.query(
@@ -76,17 +77,15 @@ async function seedTables() {
   });
 }
 
-// Leveraging an IIFE since in most versions of Javascript, a top level await is not valid syntax
-(async function () {
-  db.connect(async (err) => {
-    if (err) {
-      console.error(err);
-    }
+db.connect(async (err) => {
+  if (err) {
+    console.error(err);
+    process.exit();
+  }
 
-    console.log("Connected!");
-    await createSchema();
-    await seedTables()
-      .then(() => console.log("Tables successfully seeded."))
-      .then(() => process.exit());
-  })
-})();
+  console.log("Connected!");
+  await createSchema();
+  await seedTables()
+    .then(() => console.log("Tables successfully seeded."));
+  //   .then(() => process.exit());
+});
