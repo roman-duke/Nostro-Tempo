@@ -4,6 +4,9 @@ CREATE DATABASE ruday;
 
 USE ruday;
 
+-- TODO: Create a table for guest accounts (this would be used for prototyping, for now)
+-- TODO: Create a table for trivia_sessions and session_questions
+
 CREATE TABLE categories (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(255) UNIQUE NOT NULL,
