@@ -1,10 +1,18 @@
 import { Question } from "../models/question.js";
 import { QuestionsRepository } from "../repositories/questions.js";
+import { v4 as uuid4, v4 } from "uuid";
 
 export const questionsService = {
-  createQuestion: async (payload: Question) => {
-    const data = await QuestionsRepository.create(payload);
-    return data;
+  createQuestion: async (payload: Omit<Question, "id">) => {
+    const id = uuid4();
+    const record = {
+      id,
+      ...payload,
+    } as Question;
+
+    await QuestionsRepository.create(record);
+
+    return record;
   },
 
   getAllQuestions: async () => {
@@ -18,12 +26,15 @@ export const questionsService = {
   },
 
   updateQuestion: async (id: string, payload: Partial<Question>) => {
-    const data = await QuestionsRepository.update(id, payload);
-    return data;
+    await QuestionsRepository.update(id, payload);
+
+    // Return the updated resource
+    const response = await QuestionsRepository.findById(id);
+    return response;
   },
 
   deleteQuestion: async (id: string) => {
     const data = await QuestionsRepository.delete(id);
     return data;
-  }
-}
+  },
+};

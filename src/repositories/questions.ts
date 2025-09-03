@@ -3,30 +3,50 @@ import { Question } from "../models/question.js";
 
 export const QuestionsRepository = {
   async findAll(): Promise<Question[]> {
-    const [results] = await query<Question[]>('SELECT * FROM questions');
+    const [results] = await query<Question[]>(`
+      SELECT BIN_TO_UUID(id) AS
+        id,
+        name,
+        description,
+        difficulty,
+        correct_option_id,
+        category_id,
+        created_at,
+        updated_at
+      FROM questions;
+    `);
 
     return results;
   },
 
   async findById(id: string) {
     const [results] = await query<Question[]>(
-      `SELECT * FROM questions
-       WHERE id = ${id};`
+      `SELECT BIN_TO_UUID(id) AS
+        id,
+        name,
+        description,
+        difficulty,
+        correct_option_id,
+        category_id,
+        created_at,
+        updated_at
+       FROM questions
+       WHERE id = UUID_TO_BIN('${id}');`
     );
 
     return results;
   },
 
   async create(body: Question) {
-    const [results] = await query(
+    await query(
       `INSERT INTO questions
-       (name, description, difficulty, category_id)
-       VALUES (?, ?, ?);
+       (id, name, description, difficulty, category_id)
+       VALUES (UUID_TO_BIN(?), ?, ?, ?, ?);
       `,
       Object.values(body),
     );
 
-    return results;
+    return body.id;
   },
 
   async update(id: string, body: Partial<Question>) {
@@ -34,12 +54,10 @@ export const QuestionsRepository = {
     // and then perform an update using raw sql.
     const [results] = await query(
       `UPDATE questions
-       SET ${
-          Object.entries(body)
-                .map(val => `${val[0] = val[1]}`)
-                .toString()
-        }
-       WHERE id = ${id};
+       SET ${Object.entries(body)
+         .map((val) => `${val[0]} = "${val[1]}"`)
+         .toString()}
+       WHERE id = UUID_TO_BIN('${id}');
       `
     );
 
@@ -49,7 +67,7 @@ export const QuestionsRepository = {
   async delete(id: string) {
     await query(
       `DELETE FROM questions
-       WHERE id = ${id};
+       WHERE id = UUID_TO_BIN('${id}');
       `
     );
   }

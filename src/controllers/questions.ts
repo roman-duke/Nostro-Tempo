@@ -6,6 +6,8 @@ export const questionsController = {
     const payload = req.body;
     const result = await questionsService.createQuestion(payload);
 
+    console.log(result);
+
     res.status(201).json(result);
   },
 
@@ -34,6 +36,6 @@ export const questionsController = {
     const id = req.params.questionId;
     await questionsService.deleteQuestion(id);
 
-    res.status(204);
+    res.status(204).send();
   }
 }

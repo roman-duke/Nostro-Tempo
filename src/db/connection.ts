@@ -15,7 +15,8 @@ export const db = await mysql.createConnection({
   database: process.env.MYSQL_DATABASE,
   password: process.env.MYSQL_PASSWORD,
 }).then((res) => {
-    console.log("Connection to Db established! ✅")
+    console.log("Connection to Db established! ✅");
+    console.log(`MySQL Server running at port http://localhost:${process.env.MYSQL_PORT}`);
     return res;
   })
   .catch((err) => {
