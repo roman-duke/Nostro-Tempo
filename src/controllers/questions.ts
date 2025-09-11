@@ -6,8 +6,6 @@ export const questionsController = {
     const payload = req.body;
     const result = await questionsService.createQuestion(payload);
 
-    console.log(result);
-
     res.status(201).json(result);
   },
 

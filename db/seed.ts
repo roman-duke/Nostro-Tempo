@@ -48,7 +48,6 @@ async function seedTables() {
   // Seed the categories table first, since there's a foreign key in questions that references it
   console.log("Running SQL seed...");
   seedQueries.forEach(function (seedQuery, idx) {
-    console.log(idx);
     if (idx == 1) {
       categories.map((category) => {
         db.query(
@@ -80,12 +79,13 @@ async function seedTables() {
 db.connect(async (err) => {
   if (err) {
     console.error(err);
-    process.exit();
   }
 
   console.log("Connected!");
   await createSchema();
   await seedTables()
-    .then(() => console.log("Tables successfully seeded."));
-  //   .then(() => process.exit());
+    .then(() => {console.log("Tables successfully seeded.")})
+    .catch(() => console.log("An unexpected error occurred."));
+
+  process.exit();
 });

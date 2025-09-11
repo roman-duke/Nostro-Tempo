@@ -3,14 +3,22 @@ import { AnswerChoice } from "../models/answerChoice.js";
 
 export const AnswerChoicesRepository = {
   async findAll(): Promise<AnswerChoice[]> {
-    const [results] = await query<AnswerChoice[]>('SELECT * FROM question_options');
+    const [results] = await query<AnswerChoice[]>(`
+      SELECT
+        BIN_TO_UUID(id) AS id,
+        BIN_TO_UUID(question_id) AS question_id,
+        option_description,
+        created_at,
+        updated_at
+      FROM question_options;
+    `);
 
     return results;
   },
 
   async findById(id: string) {
     const [results] = await query<AnswerChoice[]>(
-      `SELECT * FROM answer_options
+      `SELECT * FROM question_options
        WHERE id = ${id};
       `
     );
@@ -19,20 +27,20 @@ export const AnswerChoicesRepository = {
   },
 
   async create(body: AnswerChoice) {
-    const [results] = await query(
-      `INSERT INTO answer_options
-       (question_id, option_description)
-       VALUES (?, ?);
+    await query(
+      `INSERT INTO question_options
+       (id, question_id, option_description)
+       VALUES (UUID_TO_BIN(?), UUID_TO_BIN(?), ?);
       `,
       Object.values(body),
-    )
+    );
 
-    return results;
+    return body.id;
   },
 
   async delete(id: string) {
     await query(
-      `DELETE FROM answer_options
+      `DELETE FROM question_options
        WHERE id = ${id};
       `
     )

@@ -1,10 +1,10 @@
 import { Question } from "../models/question.js";
 import { QuestionsRepository } from "../repositories/questions.js";
-import { v4 as uuid4, v4 } from "uuid";
+import { v4 as uuidv4 } from "uuid";
 
 export const questionsService = {
   createQuestion: async (payload: Omit<Question, "id">) => {
-    const id = uuid4();
+    const id = uuidv4();
     const record = {
       id,
       ...payload,

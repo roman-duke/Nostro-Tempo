@@ -7,7 +7,7 @@ answerChoicesRoute.get('/answerChoices', answerChoicesController.getAnswerChoice
 
 answerChoicesRoute.post('/answerChoices', answerChoicesController.createAnswerChoice);
 
-// answerChoicesRoute.put('/answerChoices/:answerChoiceId');
+// answerChoicesRoute.patch('/answerChoices/:answerChoiceId');
 
 answerChoicesRoute.delete('/answerChoices/:answerChoiceId', answerChoicesController.deleteAnswerChoice);
 
