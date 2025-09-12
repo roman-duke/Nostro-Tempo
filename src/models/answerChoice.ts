@@ -7,3 +7,12 @@ export interface AnswerChoice extends RowDataPacket {
   createdAt?: string;
   updatedAt?: string;
 }
+
+interface SelectedAnswer {
+  questionId: string,
+  selectedAnswerId: string,
+}
+
+export interface UserAnswer {
+  selectedAnswers: SelectedAnswer[],
+}
