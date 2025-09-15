@@ -4,6 +4,13 @@ CREATE DATABASE ruday;
 
 USE ruday;
 
+CREATE TABLE guest_users (
+  id BINARY(16) PRIMARY KEY DEFAULT (UUID_TO_BIN(UUID())),
+  username VARCHAR(255) UNIQUE NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+)
+
 CREATE TABLE categories (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(255) UNIQUE NOT NULL,
@@ -34,17 +41,16 @@ CREATE TABLE question_options (
   CONSTRAINT fk_question FOREIGN KEY (question_id) REFERENCES questions(id) ON DELETE CASCADE
 );
 
--- CREATE TABLE trivia_sessions (
---   trivia_session_id UUID PRIMARY KEY,
---   user_id UUID NOT NULL,
---   total_score INT DEFAULT 0,
---   attempted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
---   completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
---   expires_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
---   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
---   time_spent INT DEFAULT 0,
---   FOREIGN KEY (user_id) REFERENCES users(user_id)
--- );
+CREATE TABLE trivia_sessions (
+  trivia_session_id UUID PRIMARY KEY,
+  user_id UUID NOT NULL,
+  total_score INT DEFAULT 0,
+  attempted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  expires_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
 
 -- CREATE TABLE trivia_session_questions (
 --   session_id UUID NOT NULL,
@@ -54,6 +60,3 @@ CREATE TABLE question_options (
 --   is_answered BOOLEAN DEFAULT NULL,
 --   PRIMARY KEY(session_id, question_id)
 -- );
-
--- TODO: Create a table for guest accounts (this would be used for prototyping, for now)
--- TODO: Create a table for trivia_sessions and session_questions
