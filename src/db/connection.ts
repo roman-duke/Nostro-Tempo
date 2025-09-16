@@ -27,7 +27,7 @@ export const db = await mysql.createConnection({
 
 export async function query<T extends RowDataPacket[] | ResultSetHeader>(
   sql: string,
-  params?: string[]
+  params?: (string | number)[]
 ): Promise<[T, FieldPacket[]]> {
   return db.query<T>(sql, params);
 }

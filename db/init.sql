@@ -8,8 +8,8 @@ CREATE TABLE guest_users (
   id BINARY(16) PRIMARY KEY DEFAULT (UUID_TO_BIN(UUID())),
   username VARCHAR(255) UNIQUE NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-)
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
 CREATE TABLE categories (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -42,21 +42,21 @@ CREATE TABLE question_options (
 );
 
 CREATE TABLE trivia_sessions (
-  trivia_session_id UUID PRIMARY KEY,
-  user_id UUID NOT NULL,
+  id BINARY(16) PRIMARY KEY DEFAULT (UUID_TO_BIN(UUID())),
+  user_id BINARY(16) NOT NULL,
   total_score INT DEFAULT 0,
-  attempted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  expires_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  -- attempted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  -- completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  -- expires_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (user_id) REFERENCES users(user_id)
+  FOREIGN KEY (user_id) REFERENCES guest_users(id)
 );
 
--- CREATE TABLE trivia_session_questions (
---   session_id UUID NOT NULL,
---   question_id INT NOT NULL,
---   time_spent INT DEFAULT 0,
---   is_correct BOOLEAN DEFAULT NULL,
---   is_answered BOOLEAN DEFAULT NULL,
---   PRIMARY KEY(session_id, question_id)
--- );
+CREATE TABLE trivia_session_questions (
+  session_id BINARY(16) NOT NULL,
+  question_id BINARY(16) NOT NULL,
+  time_spent INT DEFAULT 0,
+  is_correct BOOLEAN DEFAULT NULL,
+  -- is_answered BOOLEAN DEFAULT NULL,
+  PRIMARY KEY(session_id, question_id)
+);

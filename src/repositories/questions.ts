@@ -3,8 +3,8 @@ import { Question } from "../models/question.js";
 import camelToSnakeCase from "../utils/variableUtils.js";
 
 export const QuestionsRepository = {
-  async findAll(): Promise<Question[]> {
-    const [results] = await query<Question[]>(`
+  async findAll(sqlConstraints?: string, params?: (string | number)[]): Promise<Question[]> {
+    let sql = `
       SELECT
         BIN_TO_UUID(id) AS id,
         IF(correct_option_id IS NOT NULL, BIN_TO_UUID(correct_option_id), null) AS correct_option_id,
@@ -14,8 +14,12 @@ export const QuestionsRepository = {
         category_id,
         created_at,
         updated_at
-      FROM questions;
-    `);
+      FROM questions
+    `;
+
+    sql += `${sqlConstraints};`
+
+    const [results] = await query<Question[]>(sql, params);
 
     return results;
   },
