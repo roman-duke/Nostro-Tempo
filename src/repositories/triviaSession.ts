@@ -19,7 +19,7 @@ export const TriviaSessionRepository = {
     return results;
   },
 
-  async create(body: Pick<CreateSession, "id" | "userId"> & { totalScore?: number }) {
+  async create(body: Pick<CreateSession, "id" | "userId">) {
     await query(
       `INSERT INTO trivia_sessions
        (id, user_id)
@@ -29,7 +29,7 @@ export const TriviaSessionRepository = {
     );
   },
 
-  async update(id: string, body: Partial<Session>) {
+  async update(id: string, body: Omit<Session, "createdAt">) {
     // Transform from camelCase to snake_case where necessary.
     const [results] = await query(
       `UPDATE trivia_sessions
@@ -56,6 +56,21 @@ export const TriviaSessionRepository = {
       `,
       records
     );
+  },
+
+  async updateSessionQuestions(sessionId: string, updates: SessionQuestionUpdate[]) {
+    await query(
+      `UPDATE trivia_session_questions
+       SET
+         is_correct = (CASE
+                        ${updates.map(val => `WHEN question_id = ${val.questionId} THEN ${val.isCorrect ? 'TRUE' : 'FALSE'}`)
+                                 .toString()}
+                      END)
+       WHERE question_id IN (${updates.map(() => 'UUID_TO_BIN(?)').toString()})
+         AND session_id = UUID_TO_BIN('?');
+      `,
+      [...updates.map(val => val.questionId), sessionId]
+    )
   }
 }
 
@@ -63,4 +78,9 @@ export const TriviaSessionRepository = {
 interface TriviaSessionQuestion {
   questionId: string,
   sessionId: string,
+}
+
+interface SessionQuestionUpdate {
+  questionId: string,
+  isCorrect: boolean,
 }

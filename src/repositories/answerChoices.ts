@@ -2,16 +2,20 @@ import { query } from "../db/connection.js";
 import { AnswerChoice } from "../models/answerChoice.js";
 
 export const AnswerChoicesRepository = {
-  async findAll(): Promise<AnswerChoice[]> {
-    const [results] = await query<AnswerChoice[]>(`
+  async findAll(sqlConstraints?: string, params?: (string | number)[]): Promise<AnswerChoice[]> {
+    let sql = `
       SELECT
         BIN_TO_UUID(id) AS id,
         BIN_TO_UUID(question_id) AS question_id,
         option_description,
         created_at,
         updated_at
-      FROM question_options;
-    `);
+      FROM question_options
+    `;
+
+    sql += `${sqlConstraints}`;
+
+    const [results] = await query<AnswerChoice[]>(sql, params);
 
     return results;
   },

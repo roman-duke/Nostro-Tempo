@@ -17,3 +17,14 @@ export interface Session extends RowDataPacket {
   totalScore: number,
   createdAt: string,
 }
+
+export interface SessionAnswer {
+  userId: string,
+  sessionId: string,
+  sessionAnswers: Answer[],
+}
+
+export interface Answer {
+  questionId: string,
+  selectedOptionId: string,
+}
