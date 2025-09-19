@@ -1,11 +1,11 @@
-import z, { uuidv4 } from "zod";
+import z, { number, uuidv4 } from "zod";
 
 // Define Schemas for the Question Model in the Application Layer
 export const newQuestionSchema = z.object({
-  categoryId: z.uuidv4(),
+  name: z.string(),
   description: z.string(),
   difficulty: z.enum(["HARD", "MEDIUM", "EASY"]),
-  correctOptionId: z.uuidv4(),
+  categoryId: z.coerce.number(),
 });
 
 export type NewQuestion = z.infer<typeof newQuestionSchema>;

@@ -2,6 +2,7 @@ import { RowDataPacket } from "mysql2";
 
 export interface Question extends RowDataPacket {
   id: string,
+  name: string,
   categoryId: string,
   description: string,
   difficulty: "HARD" | "MEDIUM" | "EASY",

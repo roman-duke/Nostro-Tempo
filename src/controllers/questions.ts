@@ -1,10 +1,19 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { questionsService } from "../services/questions.js";
 import { UserAnswer } from "../models/answerChoice.js";
+import { newQuestionSchema } from "../models/clientModels/question.js";
 
 export const questionsController = {
-  createQuestion: async (req: Request, res: Response) => {
-    const payload = req.body;
+  createQuestion: async (req: Request, res: Response, next: NextFunction) => {
+    console.log(req.body);
+    
+    // Perform the data validation using zod
+    const parseResult = newQuestionSchema.safeParse(req.body);
+    if (!parseResult.success) {
+      return next(parseResult.error);
+    }
+
+    const payload = parseResult.data;
     const result = await questionsService.createQuestion(payload);
 
     res.status(201).json(result);
