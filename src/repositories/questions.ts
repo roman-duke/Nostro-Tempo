@@ -1,6 +1,10 @@
+import { RowDataPacket } from "mysql2";
 import { query } from "../db/connection.js";
-import { Question } from "../models/question.js";
+import { CreateQuestion } from "../models/clientModels/question.js";
+import { Question } from "../models/domainModels/question.js";
 import camelToSnakeCase from "../utils/variableUtils.js";
+
+type QuestioRepositoryModel = Question & RowDataPacket;
 
 export const QuestionsRepository = {
   async findAll(sqlConstraints?: string, params?: (string | number)[]): Promise<Question[]> {
@@ -19,13 +23,13 @@ export const QuestionsRepository = {
 
     sql += `${sqlConstraints};`
 
-    const [results] = await query<Question[]>(sql, params);
+    const [results] = await query<QuestioRepositoryModel[]>(sql, params);
 
     return results;
   },
 
   async findById(id: string) {
-    const [results] = await query<Question[]>(
+    const [results] = await query<QuestioRepositoryModel[]>(
       `SELECT
         BIN_TO_UUID(id) AS id,
         IF(correct_option_id IS NOT NULL, BIN_TO_UUID(correct_option_id), null) AS correct_option_id,
@@ -39,11 +43,11 @@ export const QuestionsRepository = {
        WHERE id = UUID_TO_BIN('${id}');`
     );
 
-    return results;
+    return results[0];
   },
 
-  async create(body: Question) {
-    await query(
+  async insert(body: CreateQuestion & { id: string }) {
+    const result = await query(
       `INSERT INTO questions
        (id, name, description, difficulty, category_id)
        VALUES (UUID_TO_BIN(?), ?, ?, ?, ?);

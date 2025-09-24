@@ -11,8 +11,6 @@ questionsRoute.get('/questions', questionsController.getQuestions);
 
 questionsRoute.post('/questions', questionsController.createQuestion);
 
-questionsRoute.post('/questions/checkAnswers', questionsController.checkAnswers);
-
 questionsRoute.get('/questions/:questionId', questionsController.getQuestion);
 
 questionsRoute.delete('/questions/:questionId', questionsController.deleteQuestion);

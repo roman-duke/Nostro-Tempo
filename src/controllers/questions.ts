@@ -1,20 +1,22 @@
+import z from "zod";
 import { NextFunction, Request, Response } from "express";
 import { questionsService } from "../services/questions.js";
 import { UserAnswer } from "../models/answerChoice.js";
-import { newQuestionSchema } from "../models/clientModels/question.js";
+import { CreateQuestion, createQuestionSchema, partialQuestionSchema } from "../models/clientModels/question.js";
 
 export const questionsController = {
   createQuestion: async (req: Request, res: Response, next: NextFunction) => {
-    console.log(req.body);
-    
     // Perform the data validation using zod
-    const parseResult = newQuestionSchema.safeParse(req.body);
+    const parseResult = createQuestionSchema.safeParse(req.body);
     if (!parseResult.success) {
       return next(parseResult.error);
     }
 
-    const payload = parseResult.data;
+    const payload = parseResult.data as CreateQuestion;
     const result = await questionsService.createQuestion(payload);
+
+    // Transform the reponse to the required format for the application layer.
+    
 
     res.status(201).json(result);
   },
@@ -32,9 +34,23 @@ export const questionsController = {
     res.status(200).json(question);
   },
 
-  updateQuestion: async (req: Request, res: Response) => {
+  updateQuestion: async (req: Request, res: Response, next: NextFunction) => {
     const id = req.params.questionId;
-    const payload = req.body;
+    // Check if we got a valid id
+    const idParseResult = z.uuidv4().safeParse(id);
+    if (!idParseResult.success) {
+      return next(idParseResult.error);
+    }
+
+    // Validate the request body against the partial of the Question object
+    const dataParseResult = partialQuestionSchema.safeParse(req.body);
+
+    if (!dataParseResult.success) {
+      return next(dataParseResult.error);
+    }
+
+    const payload = dataParseResult.data;
+
     const question = await questionsService.updateQuestion(id, payload);
 
     res.status(201).json(question);
@@ -45,13 +61,5 @@ export const questionsController = {
     await questionsService.deleteQuestion(id);
 
     res.status(204).send();
-  },
-
-  checkAnswers: async (req: Request, res: Response) => {
-    // Check if the submitted answers for given questions are correct
-    const payload = req.body as UserAnswer;
-    const result = await questionsService.checkAnswers(payload);
-
-    res.status(200).json(result);
   }
 }

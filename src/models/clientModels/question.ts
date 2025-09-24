@@ -1,14 +1,18 @@
-import z, { number, uuidv4 } from "zod";
+import z from "zod";
 
 // Define Schemas for the Question Model in the Application Layer
-export const newQuestionSchema = z.object({
+export const createQuestionSchema = z.object({
   name: z.string(),
   description: z.string(),
   difficulty: z.enum(["HARD", "MEDIUM", "EASY"]),
   categoryId: z.coerce.number(),
 });
 
-export type NewQuestion = z.infer<typeof newQuestionSchema>;
+export const partialQuestionSchema = createQuestionSchema.partial();
+
+export type CreateQuestion = z.infer<typeof createQuestionSchema>;
+
+export type PartialQuestion = z.infer<typeof partialQuestionSchema>;
 
 // export const questionClientSchema = z.object({
 //   id: uuidv4(),

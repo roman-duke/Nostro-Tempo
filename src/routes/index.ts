@@ -12,11 +12,11 @@ appRouter.use('/', answerChoicesRoute);
 appRouter.use('/', triviaSessionRoute);
 
 // Default error handler
-appRouter.use((err: any, req: Request, res: Response, next: NextFunction) => {
+appRouter.use((err: any, _req: Request, res: Response, next: NextFunction) => {
   if (res.headersSent) {
     return next(err);
   }
 
-  console.error(err.stack);
+  console.error(err.message);
   res.status(500).send("Internal Server Error!");
-})
+});
