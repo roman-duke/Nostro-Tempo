@@ -2,7 +2,10 @@ import { query } from "../db/connection.js";
 import { AnswerChoice } from "../models/answerChoice.js";
 
 export const AnswerChoicesRepository = {
-  async findAll(sqlConstraints?: string, params?: (string | number)[]): Promise<AnswerChoice[]> {
+  async findAll(
+    sqlConstraints?: string,
+    params?: (string | number)[],
+  ): Promise<AnswerChoice[]> {
     let sql = `
       SELECT
         BIN_TO_UUID(id) AS id,
@@ -24,7 +27,7 @@ export const AnswerChoicesRepository = {
     const [results] = await query<AnswerChoice[]>(
       `SELECT * FROM question_options
        WHERE id = ${id};
-      `
+      `,
     );
 
     return results;
@@ -46,9 +49,9 @@ export const AnswerChoicesRepository = {
     await query(
       `DELETE FROM question_options
        WHERE id = ${id};
-      `
-    )
-  }
+      `,
+    );
+  },
 
   // async update(id: string, body: Partial<AnswerChoice>) {
   //   // Take the partial or full form of the answer option object
@@ -61,4 +64,4 @@ export const AnswerChoicesRepository = {
   //     `
   //   )
   // }
-}
+};

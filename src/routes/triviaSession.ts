@@ -3,7 +3,10 @@ import { triviaSessionController } from "../controllers/triviaSession.js";
 
 const triviaSessionRoute = express.Router();
 
-triviaSessionRoute.post('/triviaSessions', triviaSessionController.createSession);
-triviaSessionRoute.post('/triviaSession/grade');
+triviaSessionRoute.post(
+  "/triviaSessions",
+  triviaSessionController.createSession,
+);
+triviaSessionRoute.post("/triviaSession/grade");
 
 export { triviaSessionRoute };

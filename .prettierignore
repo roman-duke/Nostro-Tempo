@@ -1,0 +1,10 @@
+# Ignore build artifacts
+dist/
+build/
+coverage/
+
+# Ignore all sql files
+**/*.sql
+
+# Ignore all config files
+*.json

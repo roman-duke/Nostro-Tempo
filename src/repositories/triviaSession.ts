@@ -13,7 +13,7 @@ export const TriviaSessionRepository = {
     const [results] = await query<Session[]>(
       `SELECT * FROM trivia_sessions;
        WHERE id = UUID_TO_BIN('${id}');
-      `
+      `,
     );
 
     return results;
@@ -25,7 +25,7 @@ export const TriviaSessionRepository = {
        (id, user_id)
        VALUES (UUID_TO_BIN(?), UUID_TO_BIN(?));
       `,
-      Object.values(body).map(val => val.toString())
+      Object.values(body).map((val) => val.toString()),
     );
   },
 
@@ -34,53 +34,61 @@ export const TriviaSessionRepository = {
     const [results] = await query(
       `UPDATE trivia_sessions
        SET ${Object.entries(body)
-          .map((val) => `${camelToSnakeCase(val[0])} = UUID_TO_BIN('${val[1]}')`)
-          .toString()}
+         .map((val) => `${camelToSnakeCase(val[0])} = UUID_TO_BIN('${val[1]}')`)
+         .toString()}
        WHERE id = UUID_TO_BIN('${id}');
-      `
+      `,
     );
 
     return results;
   },
 
   async createSessionQuestions(questions: TriviaSessionQuestion[]) {
-    const records = questions.map((question) => Object.values(question))
-                             .toString()
-                             .split(',');
+    const records = questions
+      .map((question) => Object.values(question))
+      .toString()
+      .split(",");
 
     await query(
       `INSERT INTO trivia_session_questions
        (session_id, question_id)
-       VALUES ${questions.map(() => '(UUID_TO_BIN(?), UUID_TO_BIN(?))')
-                         .toString()}
+       VALUES ${questions
+         .map(() => "(UUID_TO_BIN(?), UUID_TO_BIN(?))")
+         .toString()}
       `,
-      records
+      records,
     );
   },
 
-  async updateSessionQuestions(sessionId: string, updates: SessionQuestionUpdate[]) {
+  async updateSessionQuestions(
+    sessionId: string,
+    updates: SessionQuestionUpdate[],
+  ) {
     await query(
       `UPDATE trivia_session_questions
        SET
          is_correct = (CASE
-                        ${updates.map(val => `WHEN question_id = ${val.questionId} THEN ${val.isCorrect ? 'TRUE' : 'FALSE'}`)
-                                 .toString()}
+                        ${updates
+                          .map(
+                            (val) =>
+                              `WHEN question_id = ${val.questionId} THEN ${val.isCorrect ? "TRUE" : "FALSE"}`,
+                          )
+                          .toString()}
                       END)
-       WHERE question_id IN (${updates.map(() => 'UUID_TO_BIN(?)').toString()})
+       WHERE question_id IN (${updates.map(() => "UUID_TO_BIN(?)").toString()})
          AND session_id = UUID_TO_BIN('?');
       `,
-      [...updates.map(val => val.questionId), sessionId]
-    )
-  }
-}
-
+      [...updates.map((val) => val.questionId), sessionId],
+    );
+  },
+};
 
 interface TriviaSessionQuestion {
-  questionId: string,
-  sessionId: string,
+  questionId: string;
+  sessionId: string;
 }
 
 interface SessionQuestionUpdate {
-  questionId: string,
-  isCorrect: boolean,
+  questionId: string;
+  isCorrect: boolean;
 }

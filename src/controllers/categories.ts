@@ -35,5 +35,5 @@ export const categoriesController = {
     await categoriesService.deleteCategory(id);
 
     res.status(204);
-  }
-}
+  },
+};

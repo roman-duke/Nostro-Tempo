@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "seed": "tsc db/seed.ts --noEmit true && tsx db/seed.ts"
+    "seed": "tsc db/seed.ts --noEmit true && tsx db/seed.ts",
+    "format": "npx prettier . --write"
   },
   "author": "Roman Donald <romanunuose@gmail.com>",
   "license": "MIT",
@@ -21,6 +22,7 @@
     "@types/express": "^5.0.0",
     "@types/node": "^22.10.2",
     "concurrently": "^9.1.0",
+    "prettier": "3.6.2",
     "typescript": "^5.6.3"
   }
 }

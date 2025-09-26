@@ -1,9 +1,9 @@
 import { query } from "../db/connection.js";
-import { Category } from "../models/category.js"
+import { Category } from "../models/category.js";
 
 export const CategoriesRepository = {
   async findAll(): Promise<Category[]> {
-    const [results] = await query<Category[]>('SELECT * FROM categories;');
+    const [results] = await query<Category[]>("SELECT * FROM categories;");
 
     return results;
   },
@@ -11,7 +11,7 @@ export const CategoriesRepository = {
   async findById(id: string) {
     const [results] = await query<Category[]>(
       `SELECT * FROM categories
-       WHERE id = ${id};`
+       WHERE id = ${id};`,
     );
 
     return results;
@@ -24,7 +24,7 @@ export const CategoriesRepository = {
        VALUES (?, ?, ?);
       `,
       Object.values(body),
-    )
+    );
 
     return results;
   },
@@ -34,13 +34,11 @@ export const CategoriesRepository = {
     // and then perform an update using raw sql.
     const [results] = await query(
       `UPDATE categories
-       SET ${
-          Object.entries(body)
-                .map(val => `${val[0] = val[1]}`)
-                .toString()
-        }
+       SET ${Object.entries(body)
+         .map((val) => `${(val[0] = val[1])}`)
+         .toString()}
        WHERE id = ${id};
-      `
+      `,
     );
 
     return results;
@@ -50,7 +48,7 @@ export const CategoriesRepository = {
     const [results] = await query(
       `DELETE FROM categories
        WHERE id = ${id};
-      `
+      `,
     );
-  }
-}
+  },
+};

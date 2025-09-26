@@ -1,5 +1,5 @@
 export default function camelToSnakeCase(camelCase: string) {
-  return camelCase.split('').reduce((prev, curr) => {
+  return camelCase.split("").reduce((prev, curr) => {
     let nextLetter = curr;
 
     const currCharCode = curr.charCodeAt(0);
@@ -8,8 +8,5 @@ export default function camelToSnakeCase(camelCase: string) {
     }
 
     return prev + nextLetter;
-  }, '');
+  }, "");
 }
-
-
-

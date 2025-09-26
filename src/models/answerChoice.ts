@@ -1,7 +1,7 @@
 import { RowDataPacket } from "mysql2";
 
 export interface AnswerChoice extends RowDataPacket {
-  id: string,
+  id: string;
   questionId: string;
   optionDescription: string;
   createdAt?: string;
@@ -9,10 +9,10 @@ export interface AnswerChoice extends RowDataPacket {
 }
 
 interface SelectedAnswer {
-  questionId: string,
-  selectedAnswerId: string,
+  questionId: string;
+  selectedAnswerId: string;
 }
 
 export interface UserAnswer {
-  selectedAnswers: SelectedAnswer[],
+  selectedAnswers: SelectedAnswer[];
 }

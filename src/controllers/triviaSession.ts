@@ -18,5 +18,5 @@ export const triviaSessionController = {
     const result = await triviaSessionService.gradeSession(payload);
 
     // res.status(201).json()
-  }
-}
+  },
+};

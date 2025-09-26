@@ -1,5 +1,5 @@
 import express, { Express } from "express";
-import 'dotenv/config';
+import "dotenv/config";
 import { appRouter } from "./routes/index.js";
 
 const app: Express = express();
@@ -11,7 +11,7 @@ app.use(express.json());
 // Expose all routes
 app.use("/v1", appRouter);
 
-app.get('/', (req, res) => {
+app.get("/", (req, res) => {
   const template = `====================================\nWelcome to Rudium Play!!\n====================================`;
   res.send(template);
 });

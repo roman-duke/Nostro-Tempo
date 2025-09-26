@@ -1,14 +1,23 @@
-import express from "express"
+import express from "express";
 import { answerChoicesController } from "../controllers/answerChoices.js";
 
 const answerChoicesRoute = express.Router();
 
-answerChoicesRoute.get('/answerChoices', answerChoicesController.getAnswerChoices);
+answerChoicesRoute.get(
+  "/answerChoices",
+  answerChoicesController.getAnswerChoices,
+);
 
-answerChoicesRoute.post('/answerChoices', answerChoicesController.createAnswerChoice);
+answerChoicesRoute.post(
+  "/answerChoices",
+  answerChoicesController.createAnswerChoice,
+);
 
 // answerChoicesRoute.patch('/answerChoices/:answerChoiceId');
 
-answerChoicesRoute.delete('/answerChoices/:answerChoiceId', answerChoicesController.deleteAnswerChoice);
+answerChoicesRoute.delete(
+  "/answerChoices/:answerChoiceId",
+  answerChoicesController.deleteAnswerChoice,
+);
 
-export { answerChoicesRoute }
+export { answerChoicesRoute };

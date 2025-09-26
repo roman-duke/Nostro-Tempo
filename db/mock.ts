@@ -52,36 +52,42 @@ const questions: Question[] = [
 const categories = [
   {
     name: "Math",
-    image: "https://www.istockphoto.com/vector/math-equations-written-on-a-blackboard-gm1219382595-356664698",
+    image:
+      "https://www.istockphoto.com/vector/math-equations-written-on-a-blackboard-gm1219382595-356664698",
     description: "Explore the world of numbers, equations and problem solving.",
   },
   {
     name: "Physics",
-    image: "https://www.istockphoto.com/vector/blackboard-inscribed-with-scientific-formulas-and-calculations-in-physics-and-gm936903524-256298904?searchscope=image%2Cfilm",
+    image:
+      "https://www.istockphoto.com/vector/blackboard-inscribed-with-scientific-formulas-and-calculations-in-physics-and-gm936903524-256298904?searchscope=image%2Cfilm",
     description:
       "Discover the laws of nature and the principles governing the universe.",
   },
   {
     name: "Football",
-    image: "https://www.vecteezy.com/photo/27829023-close-up-of-many-soccer-players-kicking-a-football-on-a-field-competition-scene-created-with-generative-ai-technology",
+    image:
+      "https://www.vecteezy.com/photo/27829023-close-up-of-many-soccer-players-kicking-a-football-on-a-field-competition-scene-created-with-generative-ai-technology",
     description:
       "Test your knowledge of the beautiful game, its players and iconic moments.",
   },
   {
     name: "Chess",
-    image: "https://www.istockphoto.com/photo/chess-game-competition-business-concept-business-competition-concept-fighting-and-gm1395539260-450607467?searchscope=image%2Cfilm",
+    image:
+      "https://www.istockphoto.com/photo/chess-game-competition-business-concept-business-competition-concept-fighting-and-gm1395539260-450607467?searchscope=image%2Cfilm",
     description:
       "Dive into the strategies, tactics, and history of the ultimate mind sport.",
   },
   {
     name: "Science",
-    image: "https://www.istockphoto.com/photo/close-up-of-examining-of-test-sample-under-the-microscope-gm911834392-251042959?searchscope=image%2Cfilm",
+    image:
+      "https://www.istockphoto.com/photo/close-up-of-examining-of-test-sample-under-the-microscope-gm911834392-251042959?searchscope=image%2Cfilm",
     description:
       "Uncover fascinating facts across biology, chemistry and more.",
   },
   {
     name: "Geography",
-    image: "https://www.istockphoto.com/photo/india-and-the-world-gm840213124-136833099?searchscope=image%2Cfilm",
+    image:
+      "https://www.istockphoto.com/photo/india-and-the-world-gm840213124-136833099?searchscope=image%2Cfilm",
     description:
       "Travel the globe with questions about countries, landmarks, and maps.",
   },

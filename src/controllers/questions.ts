@@ -2,7 +2,11 @@ import z from "zod";
 import { NextFunction, Request, Response } from "express";
 import { questionsService } from "../services/questions.js";
 import { UserAnswer } from "../models/answerChoice.js";
-import { CreateQuestion, createQuestionSchema, partialQuestionSchema } from "../models/clientModels/question.js";
+import {
+  CreateQuestion,
+  createQuestionSchema,
+  partialQuestionSchema,
+} from "../models/clientModels/question.js";
 
 export const questionsController = {
   createQuestion: async (req: Request, res: Response, next: NextFunction) => {
@@ -16,7 +20,6 @@ export const questionsController = {
     const result = await questionsService.createQuestion(payload);
 
     // Transform the reponse to the required format for the application layer.
-    
 
     res.status(201).json(result);
   },
@@ -61,5 +64,5 @@ export const questionsController = {
     await questionsService.deleteQuestion(id);
 
     res.status(204).send();
-  }
-}
+  },
+};

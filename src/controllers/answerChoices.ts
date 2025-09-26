@@ -28,4 +28,4 @@ export const answerChoicesController = {
   deleteAnswerChoice: async (req: Request, res: Response) => {
     const id = req.params.answerChoiceId;
   },
-}
+};

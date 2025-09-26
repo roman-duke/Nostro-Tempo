@@ -4,27 +4,27 @@ import { Category } from "./category.js";
 // TODO: Use zod for the typing and validation
 
 export interface CreateSession {
-  id: string,
-  userId: string,
-  categories: Category["id"][],
-  questionsSize: number,
-  difficultyLevels: ("EASY" | "MEDIUM" | "HARD")[],
+  id: string;
+  userId: string;
+  categories: Category["id"][];
+  questionsSize: number;
+  difficultyLevels: ("EASY" | "MEDIUM" | "HARD")[];
 }
 
 export interface Session extends RowDataPacket {
-  triviaSessionId: string,
-  userId: string,
-  totalScore: number,
-  createdAt: string,
+  triviaSessionId: string;
+  userId: string;
+  totalScore: number;
+  createdAt: string;
 }
 
 export interface SessionAnswer {
-  userId: string,
-  sessionId: string,
-  sessionAnswers: Answer[],
+  userId: string;
+  sessionId: string;
+  sessionAnswers: Answer[];
 }
 
 export interface Answer {
-  questionId: string,
-  selectedOptionId: string,
+  questionId: string;
+  selectedOptionId: string;
 }

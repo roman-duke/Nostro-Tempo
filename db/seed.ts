@@ -55,7 +55,7 @@ async function seedTables() {
           Object.values(category),
           (err: mysql.QueryError | null) => {
             if (err) throw err;
-          }
+          },
         );
       });
     } else if (idx == 2) {
@@ -65,7 +65,7 @@ async function seedTables() {
           Object.values(question),
           (err: mysql.QueryError | null) => {
             if (err) throw err;
-          }
+          },
         );
       });
     } else {
@@ -84,7 +84,9 @@ db.connect(async (err) => {
   console.log("Connected!");
   await createSchema();
   await seedTables()
-    .then(() => {console.log("Tables successfully seeded.")})
+    .then(() => {
+      console.log("Tables successfully seeded.");
+    })
     .catch(() => console.log("An unexpected error occurred."));
 
   process.exit();

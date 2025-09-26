@@ -7,7 +7,10 @@ import camelToSnakeCase from "../utils/variableUtils.js";
 type QuestioRepositoryModel = Question & RowDataPacket;
 
 export const QuestionsRepository = {
-  async findAll(sqlConstraints?: string, params?: (string | number)[]): Promise<Question[]> {
+  async findAll(
+    sqlConstraints?: string,
+    params?: (string | number)[],
+  ): Promise<Question[]> {
     let sql = `
       SELECT
         BIN_TO_UUID(id) AS id,
@@ -21,7 +24,7 @@ export const QuestionsRepository = {
       FROM questions
     `;
 
-    sql += `${sqlConstraints};`
+    sql += `${sqlConstraints};`;
 
     const [results] = await query<QuestioRepositoryModel[]>(sql, params);
 
@@ -40,7 +43,7 @@ export const QuestionsRepository = {
         created_at,
         updated_at
        FROM questions
-       WHERE id = UUID_TO_BIN('${id}');`
+       WHERE id = UUID_TO_BIN('${id}');`,
     );
 
     return results[0];
@@ -69,7 +72,7 @@ export const QuestionsRepository = {
          .map((val) => `${camelToSnakeCase(val[0])} = UUID_TO_BIN('${val[1]}')`)
          .toString()}
        WHERE id = UUID_TO_BIN('${id}');
-      `
+      `,
     );
 
     return results;
@@ -79,7 +82,7 @@ export const QuestionsRepository = {
     await query(
       `DELETE FROM questions
        WHERE id = UUID_TO_BIN('${id}');
-      `
+      `,
     );
-  }
-}
+  },
+};

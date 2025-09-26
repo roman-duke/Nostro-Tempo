@@ -8,7 +8,7 @@ export const answerChoicesService = {
 
     const record = {
       id,
-      ...paylaod
+      ...paylaod,
     } as AnswerChoice;
 
     await AnswerChoicesRepository.create(record);
@@ -33,5 +33,5 @@ export const answerChoicesService = {
   deleteAnswerChoice: async (id: string) => {
     const data = await AnswerChoicesRepository.delete(id);
     return data;
-  }
-}
+  },
+};
