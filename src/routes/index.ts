@@ -9,6 +9,7 @@ import { categoriesRoute } from "./categories.js";
 import { questionsRoute } from "./questions.js";
 import { answerChoicesRoute } from "./answerChoices.js";
 import { triviaSessionRoute } from "./triviaSession.js";
+import { ValidationError } from "../utils/errors.js";
 
 export const appRouter = express.Router();
 
@@ -18,11 +19,19 @@ appRouter.use("/", answerChoicesRoute);
 appRouter.use("/", triviaSessionRoute);
 
 // Default error handler
-appRouter.use((err: any, _req: Request, res: Response, next: NextFunction) => {
+// For now, we shall have just the ValidationError type
+appRouter.use((err: ValidationError, _req: Request, res: Response, next: NextFunction) => {
   if (res.headersSent) {
     return next(err);
   }
 
-  console.error(err.message);
+  if (err instanceof ValidationError) {
+    res.status(err.statusCode).json({
+      message: err.message,
+      details: err.details
+    });
+    return;
+  }
+
   res.status(500).send("Internal Server Error!");
 });
