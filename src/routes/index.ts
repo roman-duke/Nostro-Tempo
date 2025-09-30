@@ -2,7 +2,7 @@ import express, { NextFunction, Request, Response } from "express";
 import { categoriesRoute } from "./categories.js";
 import { questionsRoute } from "./questions.js";
 import { answerChoicesRoute } from "./answerChoices.js";
-import { triviaSessionRoute } from "./triviaSession.js";
+// import { triviaSessionRoute } from "./triviaSession.js";
 import { ValidationError } from "../utils/errors.js";
 
 export const appRouter = express.Router();
@@ -10,7 +10,7 @@ export const appRouter = express.Router();
 appRouter.use("/", questionsRoute);
 appRouter.use("/", categoriesRoute);
 appRouter.use("/", answerChoicesRoute);
-appRouter.use("/", triviaSessionRoute);
+// appRouter.use("/", triviaSessionRoute);
 
 // Default error handler
 // For now, we shall have just the ValidationError type
