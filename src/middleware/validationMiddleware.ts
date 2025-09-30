@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import z, { ZodObject, ZodRawShape } from "zod";
+import z, { ZodError, ZodObject, ZodRawShape } from "zod";
 import { ValidationError } from "../utils/errors.js";
 
 export function zodBodyValidator<T extends ZodRawShape>(schema: ZodObject<T>) {
@@ -15,7 +15,7 @@ export function zodBodyValidator<T extends ZodRawShape>(schema: ZodObject<T>) {
       if (err instanceof z.ZodError) {
         const numOfErrors = err.issues.length;
         message = `${message}: ${numOfErrors} error${numOfErrors == 1 ? "" : "s"} detected in body`;
-        details = err.issues.map(val => ({
+        details = err.issues.map((val) => ({
           [`${val.path}`]: val.message,
         }));
       } else if (err instanceof Error) {
@@ -25,6 +25,39 @@ export function zodBodyValidator<T extends ZodRawShape>(schema: ZodObject<T>) {
 
       const invalidRequestError = new ValidationError(message, details);
 
+      next(invalidRequestError);
+    }
+  };
+}
+
+// export function zodQueryValidator<T extends ZodRawShape>(schema: ZodObject<T>) {
+//   return (req: Request, res: Response, next: NextFunction) => {
+
+//   }
+// }
+
+// export function zodParamValidator<T extends ZodRawShape>(schema: ZodObject<T>) {
+//   return (req: Request, res: Response, next: NextFunction) => {
+
+//   }
+// }
+
+export function zodIdValidator(idSegment = "id") {
+  return (req: Request, res: Response, next: NextFunction) => {
+    try {
+      req.params[idSegment] = z.uuidv4().parse(req.params[idSegment]) as any;
+    } catch (err) {
+      let message = "Query Format Error";
+      let details = {};
+
+      if (err instanceof ZodError) {
+        message = err.message;
+        details = err.issues.map((val) => ({
+          [`${val.path}`]: val.message,
+        }));
+      }
+
+      const invalidRequestError = new ValidationError(message, details);
       next(invalidRequestError);
     }
   };

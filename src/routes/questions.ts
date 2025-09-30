@@ -1,8 +1,11 @@
 // Questions route module
 import express from "express";
 import { questionsController } from "../controllers/questions.js";
-import { zodBodyValidator } from "../middleware/validationMiddleware.js";
-import { createQuestionSchema } from "../models/clientModels/question.js";
+import {
+  zodBodyValidator,
+  zodIdValidator,
+} from "../middleware/validationMiddleware.js";
+import { createQuestionSchema, partialQuestionSchema } from "../models/clientModels/question.js";
 
 const questionsRoute = express.Router();
 
@@ -11,17 +14,28 @@ const questionsRoute = express.Router();
 // Route endpoints
 questionsRoute.get("/questions", questionsController.getQuestions);
 
-questionsRoute.post("/questions", zodBodyValidator(createQuestionSchema), questionsController.createQuestion);
+questionsRoute.post(
+  "/questions",
+  zodBodyValidator(createQuestionSchema),
+  questionsController.createQuestion,
+);
 
-questionsRoute.get("/questions/:questionId", questionsController.getQuestion);
+questionsRoute.get(
+  "/questions/:questionId",
+  zodIdValidator("questionId"),
+  questionsController.getQuestion,
+);
 
 questionsRoute.delete(
   "/questions/:questionId",
+  zodIdValidator("questionId"),
   questionsController.deleteQuestion,
 );
 
 questionsRoute.patch(
   "/questions/:questionId",
+  zodIdValidator("questionId"),
+  zodBodyValidator(partialQuestionSchema),
   questionsController.updateQuestion,
 );
 
