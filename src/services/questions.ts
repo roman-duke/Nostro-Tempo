@@ -1,8 +1,12 @@
 import { UserAnswer } from "../models/answerChoice.js";
-import { CreateQuestion } from "../models/clientModels/question.js";
+import {
+  CreateQuestion,
+  QuestionQuery,
+} from "../models/clientModels/question.js";
 import { Question } from "../models/domainModels/question.js";
 import { QuestionsRepository } from "../repositories/questions.js";
 import { v4 as uuidv4 } from "uuid";
+import { Pagination } from "../types/index.js";
 
 export const questionsService = {
   createQuestion: async (payload: CreateQuestion) => {
@@ -21,9 +25,28 @@ export const questionsService = {
     return result;
   },
 
-  getAllQuestions: async () => {
-    const data = await QuestionsRepository.findAll();
-    return data;
+  getAllQuestions: async (queryParams: QuestionQuery) => {
+    const { limit } = queryParams;
+    const totalQuestions = await QuestionsRepository.countAll();
+
+    const pagesCount = Math.ceil(totalQuestions / limit);
+    if (queryParams.page > pagesCount) {
+      queryParams.page = pagesCount;
+    }
+
+    const offset = (queryParams.page - 1) * limit;
+
+    const data = await QuestionsRepository.findAll(limit, offset);
+
+    return {
+      data,
+      meta: {
+        total: totalQuestions,
+        page: queryParams.page,
+        limit,
+        totalPages: pagesCount,
+      } as Pagination,
+    };
   },
 
   getQuestion: async (id: string) => {
@@ -42,5 +65,10 @@ export const questionsService = {
   deleteQuestion: async (id: string) => {
     const data = await QuestionsRepository.delete(id);
     return data;
+  },
+
+  countQuestions: async () => {
+    const total = await QuestionsRepository.countAll();
+    return total;
   },
 };

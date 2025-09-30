@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { questionsService } from "../services/questions.js";
+import { QuestionQuery } from "../models/clientModels/question.js";
 
 export const questionsController = {
   createQuestion: async (req: Request, res: Response) => {
@@ -12,7 +13,8 @@ export const questionsController = {
   },
 
   getQuestions: async (req: Request, res: Response) => {
-    const questions = await questionsService.getAllQuestions();
+    const queryParams = req.query as any;
+    const questions = await questionsService.getAllQuestions(queryParams);
 
     res.status(200).json(questions);
   },

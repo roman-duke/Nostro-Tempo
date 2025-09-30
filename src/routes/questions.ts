@@ -4,15 +4,20 @@ import { questionsController } from "../controllers/questions.js";
 import {
   zodBodyValidator,
   zodIdValidator,
+  zodQueryValidator,
 } from "../middleware/validationMiddleware.js";
-import { createQuestionSchema, partialQuestionSchema } from "../models/clientModels/question.js";
+import { createQuestionSchema, partialQuestionSchema, questionsQuerySchema } from "../models/clientModels/question.js";
 
 const questionsRoute = express.Router();
 
 // TODO: Have a route-bound middleware for validating the path parameters
 
 // Route endpoints
-questionsRoute.get("/questions", questionsController.getQuestions);
+questionsRoute.get(
+  "/questions",
+  zodQueryValidator(questionsQuerySchema),
+  questionsController.getQuestions,
+);
 
 questionsRoute.post(
   "/questions",

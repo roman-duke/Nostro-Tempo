@@ -3,13 +3,15 @@ import { query } from "../db/connection.js";
 import { CreateQuestion } from "../models/clientModels/question.js";
 import { Question } from "../models/domainModels/question.js";
 import camelToSnakeCase from "../utils/variableUtils.js";
+import { DbCount } from "../types/index.js";
 
 type QuestioRepositoryModel = Question & RowDataPacket;
 
 export const QuestionsRepository = {
   async findAll(
-    sqlConstraints?: string,
-    params?: (string | number)[],
+    limit: number,
+    offset: number,
+    filter?: object,
   ): Promise<Question[]> {
     let sql = `
       SELECT
@@ -24,9 +26,13 @@ export const QuestionsRepository = {
       FROM questions
     `;
 
-    sql += `${sqlConstraints};`;
+    // TODO: Convert the filters to the respective sql. There should ideally be a helper for this operation
+    // const sqlConstraints =
 
-    const [results] = await query<QuestioRepositoryModel[]>(sql, params);
+    const sqlLimits = `LIMIT ${limit} OFFSET ${offset}`;
+    sql += `${sqlLimits};`
+
+    const [results] = await query<QuestioRepositoryModel[]>(sql);
 
     return results;
   },
@@ -50,7 +56,7 @@ export const QuestionsRepository = {
   },
 
   async insert(body: CreateQuestion & { id: string }) {
-    const result = await query(
+    await query(
       `INSERT INTO questions
        (id, name, description, difficulty, category_id)
        VALUES (UUID_TO_BIN(?), ?, ?, ?, ?);
@@ -84,5 +90,10 @@ export const QuestionsRepository = {
        WHERE id = UUID_TO_BIN('${id}');
       `,
     );
+  },
+
+  async countAll() {
+    const [result] = await query<DbCount[]>(`SELECT COUNT(*) AS total FROM questions;`);
+    return result[0].total;
   },
 };

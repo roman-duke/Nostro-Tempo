@@ -14,6 +14,13 @@ export type CreateQuestion = z.infer<typeof createQuestionSchema>;
 
 export type PartialQuestion = z.infer<typeof partialQuestionSchema>;
 
+// Define schemas for the query options
+export const questionsQuerySchema = z.object({
+  page: z.coerce.number().positive().optional().default(1),
+  limit: z.coerce.number().positive().optional().default(10),
+});
+
+export type QuestionQuery = z.infer<typeof questionsQuerySchema>;
 // export const questionClientSchema = z.object({
 //   id: uuidv4(),
 //   categoryId: z.uuidv4(),

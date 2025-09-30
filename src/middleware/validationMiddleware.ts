@@ -3,9 +3,9 @@ import z, { ZodError, ZodObject, ZodRawShape } from "zod";
 import { ValidationError } from "../utils/errors.js";
 
 export function zodBodyValidator<T extends ZodRawShape>(schema: ZodObject<T>) {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return (req: Request, _res: Response, next: NextFunction) => {
     try {
-      // Mutate the request object for the next middleware function
+      // Validate the request object for the next middleware function
       req.body = schema.parse(req.body);
       next();
     } catch (err) {
@@ -24,34 +24,51 @@ export function zodBodyValidator<T extends ZodRawShape>(schema: ZodObject<T>) {
       }
 
       const invalidRequestError = new ValidationError(message, details);
-
       next(invalidRequestError);
     }
   };
 }
 
-// export function zodQueryValidator<T extends ZodRawShape>(schema: ZodObject<T>) {
-//   return (req: Request, res: Response, next: NextFunction) => {
+export function zodQueryValidator<T extends ZodRawShape>(schema: ZodObject<T>) {
+  return (req: Request, _res: Response, next: NextFunction) => {
+    try {
+      // Validate and mutate the query field of the req object for the next middleware function
+      req.query = schema.parse(req.query) as any;
+      next();
+    } catch (err) {
+      let message = "Query Format Error";
+      let details = {};
 
-//   }
-// }
+      if (err instanceof z.ZodError) {
+        // message = err.message;
+        details = err.issues.map((val) => ({
+          [`${val.path}`]: val.message,
+        }));
+      }
+
+      const invalidRequestError = new ValidationError(message, details);
+      next(invalidRequestError);
+    }
+  }
+}
 
 // export function zodParamValidator<T extends ZodRawShape>(schema: ZodObject<T>) {
-//   return (req: Request, res: Response, next: NextFunction) => {
+//   return (req: Request, _res: Response, next: NextFunction) => {
 
 //   }
 // }
 
 export function zodIdValidator(idSegment = "id") {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return (req: Request, _res: Response, next: NextFunction) => {
     try {
       req.params[idSegment] = z.uuidv4().parse(req.params[idSegment]) as any;
+      next();
     } catch (err) {
-      let message = "Query Format Error";
+      let message = `${idSegment} Format Error`;
       let details = {};
 
       if (err instanceof ZodError) {
-        message = err.message;
+        // message = err.message;
         details = err.issues.map((val) => ({
           [`${val.path}`]: val.message,
         }));
