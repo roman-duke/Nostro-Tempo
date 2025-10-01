@@ -49,7 +49,7 @@ export function zodQueryValidator<T extends ZodRawShape>(schema: ZodObject<T>) {
       const invalidRequestError = new ValidationError(message, details);
       next(invalidRequestError);
     }
-  }
+  };
 }
 
 // export function zodParamValidator<T extends ZodRawShape>(schema: ZodObject<T>) {
