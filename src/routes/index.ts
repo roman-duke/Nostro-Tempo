@@ -3,7 +3,7 @@ import { categoriesRoute } from "./categories.js";
 import { questionsRoute } from "./questions.js";
 import { answerChoicesRoute } from "./answerChoices.js";
 // import { triviaSessionRoute } from "./triviaSession.js";
-import { ValidationError } from "../utils/errors.js";
+import { NotFoundError, ValidationError } from "../utils/errors.js";
 
 export const appRouter = express.Router();
 
@@ -15,15 +15,27 @@ appRouter.use("/", answerChoicesRoute);
 // Default error handler
 // For now, we shall have just the ValidationError type
 appRouter.use(
-  (err: ValidationError, _req: Request, res: Response, next: NextFunction) => {
+  (
+    err: ValidationError | NotFoundError,
+    _req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
     if (res.headersSent) {
       return next(err);
     }
 
+    // TODO: Come back to update the structure of your errors
     if (err instanceof ValidationError) {
       res.status(err.statusCode).json({
         message: err.message,
         details: err.details,
+      });
+      return;
+    } else if (err instanceof NotFoundError) {
+      res.status(err.statusCode).json({
+        title: "Resource not found",
+        message: err.message,
       });
       return;
     }

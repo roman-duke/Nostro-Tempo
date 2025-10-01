@@ -15,3 +15,9 @@ export class ValidationError extends AppError {
     super(message, 400, details);
   }
 }
+
+export class NotFoundError extends AppError {
+  constructor(message: string) {
+    super(message, 404);
+  }
+}
