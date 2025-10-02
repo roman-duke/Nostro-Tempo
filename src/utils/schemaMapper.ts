@@ -7,11 +7,11 @@ import z, { ZodObject } from "zod";
 export default function schemaMapper<
   T extends ZodObject,
   S extends keyof T["shape"],
-  R extends Partial<{
+  R extends {
     readonly [P in S]: V;
-  }>,
+  },
   V extends string,
->(inputSchema: T, mapperObj: R) {
+>(inputSchema: T, mapperObj: Partial<R>) {
   const outputSchema = {} as ZodObject<T["shape"]>;
   // const outputSchema = {} as MappedSchema<T>;
 
@@ -23,7 +23,7 @@ const eren = z.object({
   titanId: z.uuid(),
 });
 
-const mimi = schemaMapper(eren, { name: "erenJaeger", titanId: "mikasa" });
+const mimi = schemaMapper(eren, { name: "erenJaeger" });
 
 // Helper types
 type MapperObject<T extends PropertyKey, R> = {
