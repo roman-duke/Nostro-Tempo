@@ -6,7 +6,11 @@ import {
   zodIdValidator,
   zodQueryValidator,
 } from "../middleware/validationMiddleware.js";
-import { createQuestionSchema, partialQuestionSchema, questionsQuerySchema } from "../models/clientModels/question.js";
+import {
+  createQuestionSchema,
+  partialQuestionSchema,
+  questionsQuerySchema,
+} from "../models/clientModels/question.js";
 
 const questionsRoute = express.Router();
 
