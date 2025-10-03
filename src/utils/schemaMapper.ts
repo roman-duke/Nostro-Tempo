@@ -1,4 +1,4 @@
-// import z, { ZodObject } from "zod";
+import z, { ZodObject } from "zod";
 
 // export default function schemaMapper<
 //   V extends string,
@@ -12,49 +12,54 @@
 //   return outputSchema;
 // }
 
-// const eren = z.object({
-//   name: z.string(),
-//   titanId: z.uuid(),
-// });
+const eren = z.object({
+  name: z.string(),
+  titanId: z.uuid(),
+});
 
 // const mimi = schemaMapper(eren, { name: "erenJaeger", });
 
-// // Helper types
+// Helper types
 // type MappedType<
 //   T extends ZodObject,
-//   K extends keyof T["shape"],
 //   V extends string,
 // > = {
-//   readonly [P in K]: V;
+//   readonly [P in keyof T["shape"]]: V;
 // };
 
-// // type MappedSchema<
-// //   T extends ZodObject,
-// //   K extends keyof T["shape"],
-// //   V extends string,
-// //   R extends Partial<MappedType<T, K, V>>
-// // > = {
-// //   [P in K as ]: string;
-// // };
-
-
-type Eren = {
-  name: string,
-  age: number,
-  gender: "male" | "female",
-}
-
-const remappedEren = {
-  name: "eren-jaeger",
-  gender: "male",
-} as const;
-
-// This leverages typescript's key remapping
-type MappedType<
-  T extends Record<string, PropertyKey>,
-  M extends Record<string, PropertyKey>,
+type MappedSchema<
+  T extends ZodObject,
+  R extends {
+    [P in keyof T["shape"]]: string extends infer L ? L : never;
+  },
 > = {
-  [P in keyof T as P extends keyof M ? M[P] : P]: T[P];
+  [P in keyof T["shape"] as P extends keyof R ? R[P] : P]: T["shape"][P];
 };
 
-type Test = MappedType<Eren, typeof remappedEren>;
+const mapperObj = {
+  name: "erenJaeger",
+  titanId: "mikasa"
+} as const;
+
+type Test = MappedSchema<typeof eren, typeof mapperObj>;
+
+// type Eren = {
+//   name: string,
+//   age: number,
+//   gender: "male" | "female",
+// }
+
+// const remappedEren = {
+//   name: "eren-jaeger",
+//   gender: "male",
+// } as const;
+
+// // This leverages typescript's key remapping
+// type MappedType<
+//   T extends Record<string, PropertyKey>,
+//   M extends Record<string, PropertyKey>,
+// > = {
+//   [P in keyof T as P extends keyof M ? M[P] : P]: T[P];
+// };
+
+// type Test = MappedType<Eren, typeof remappedEren>;
