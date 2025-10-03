@@ -1,4 +1,4 @@
-import z, { ZodObject } from "zod";
+import { ZodObject } from "zod";
 
 /**
  * ### TODO - Support remapping of nested objects.
@@ -26,9 +26,10 @@ import z, { ZodObject } from "zod";
  * };
  *
  * const mappedSchema = schemaMapper(inputSchema, mapperObj);
+ * 
+ * mappedSchema.parse({ name: "Eren", age: 19, titanId: "57584-88293" })
  *
- * // Input: { name: z.ZodString, age: z.ZodNumber, titanId: z.ZodString }
- * // Output: { "eren-jaeger": z.ZodString, age: z.ZodNumber, "titan_id": z.ZodString }
+ * // Output: { "eren-jaeger": "Eren", age: 19, "titan_id": "57584-88293" }
  * ```
  * @param inputSchema - The Zod schema to transform.
  *
