@@ -1,65 +1,36 @@
 import z, { ZodObject } from "zod";
 
-// export default function schemaMapper<
-//   V extends string,
-//   T extends ZodObject,
-//   S extends keyof T["shape"],
-//   R extends Partial<MappedType<T, S, V>>,
-// >(inputSchema: T, mapperObj: R) {
-//   const outputSchema = {} as ZodObject<T["shape"]>;
-//   // const outputSchema = {} as MappedSchema<T, S, V, R>;
+export default function schemaMapper<
+  V extends string,
+  T extends ZodObject,
+  R extends MappedType<T, V>,
+>(inputSchema: T, mapperObj: Partial<R>) {
+  // const outputSchema = {} as ZodObject<T["shape"]>;
+  const outputSchema = {} as MappedSchema<T, R>;
 
-//   return outputSchema;
-// }
+  return outputSchema;
+}
 
 const eren = z.object({
   name: z.string(),
   titanId: z.uuid(),
 });
 
-// const mimi = schemaMapper(eren, { name: "erenJaeger", });
+const mimi = schemaMapper(eren, { name: "erenJaeger", titanId: "eren", jere: ""});
 
 // Helper types
-// type MappedType<
-//   T extends ZodObject,
-//   V extends string,
-// > = {
-//   readonly [P in keyof T["shape"]]: V;
-// };
+type MappedType<
+  T extends ZodObject,
+  V extends string,
+> = {
+  readonly [P in keyof T["shape"]]: V;
+};
 
 type MappedSchema<
   T extends ZodObject,
   R extends {
-    [P in keyof T["shape"]]: string extends infer L ? L : never;
-  },
+    [P in keyof T["shape"]]: string;
+  }
 > = {
   [P in keyof T["shape"] as P extends keyof R ? R[P] : P]: T["shape"][P];
 };
-
-const mapperObj = {
-  name: "erenJaeger",
-  titanId: "mikasa"
-} as const;
-
-type Test = MappedSchema<typeof eren, typeof mapperObj>;
-
-// type Eren = {
-//   name: string,
-//   age: number,
-//   gender: "male" | "female",
-// }
-
-// const remappedEren = {
-//   name: "eren-jaeger",
-//   gender: "male",
-// } as const;
-
-// // This leverages typescript's key remapping
-// type MappedType<
-//   T extends Record<string, PropertyKey>,
-//   M extends Record<string, PropertyKey>,
-// > = {
-//   [P in keyof T as P extends keyof M ? M[P] : P]: T[P];
-// };
-
-// type Test = MappedType<Eren, typeof remappedEren>;
