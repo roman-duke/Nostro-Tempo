@@ -1,4 +1,5 @@
 import z from "zod";
+import { questionSchema } from "../domainModels/question.js";
 
 // Define Schemas for the Question Model in the Application Layer
 export const createQuestionSchema = z.object({
@@ -21,12 +22,12 @@ export const questionsQuerySchema = z.object({
 });
 
 export type QuestionQuery = z.infer<typeof questionsQuerySchema>;
-// export const questionClientSchema = z.object({
-//   id: uuidv4(),
-//   categoryId: z.uuidv4(),
-//   description: z.string(),
-//   difficulty: z.enum(["HARD", "MEDIUM", "EASY"]),
-//   correctOptionId: z.uuidv4(),
-//   createdAt: z.iso.date(),
-//   updatedAt: z.iso.date(),
-// });
+
+export const questionClientSchema = questionSchema.transform((data) => {
+  if (data.correctOptionId === null || data.correctOptionId) {
+    const { correctOptionId, ...rest } = data;
+    return rest;
+  }
+});
+
+export type QuestionClient = z.infer<typeof questionClientSchema>;

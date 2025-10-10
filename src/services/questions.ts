@@ -1,6 +1,7 @@
 import { UserAnswer } from "../models/answerChoice.js";
 import {
   CreateQuestion,
+  questionClientSchema,
   QuestionQuery,
 } from "../models/clientModels/question.js";
 import { Question } from "../models/domainModels/question.js";
@@ -38,8 +39,10 @@ export const questionsService = {
 
     const data = await QuestionsRepository.findAll(limit, offset);
 
+    const formattedData = questionClientSchema.array().parse(data);
+
     return {
-      data,
+      data: formattedData,
       meta: {
         total: totalQuestions,
         page: queryParams.page,
