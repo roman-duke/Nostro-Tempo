@@ -2,7 +2,7 @@ import { RowDataPacket } from "mysql2";
 import { query } from "../db/connection.js";
 import { CreateQuestion } from "../models/clientModels/question.js";
 import { Question } from "../models/domainModels/question.js";
-import camelToSnakeCase from "../utils/variableUtils.js";
+import camelToSnakeCase, { remapKeysToCamel, snakeToCamel } from "../utils/variableUtils.js";
 import { DbCount } from "../types/index.js";
 
 type QuestioRepositoryModel = Question & RowDataPacket;
@@ -27,14 +27,17 @@ export const QuestionsRepository = {
     `;
 
     // TODO: Convert the filters to the respective sql. There should ideally be a helper for this operation
-    // const sqlConstraints =
-
     const sqlLimits = `LIMIT ${limit} OFFSET ${offset}`;
     sql += `${sqlLimits};`
 
+    // TODO: Contemplate if validation of the data received from the db
+    // is necessary in the short term.
+    //============================ CODE SMELL ============================//
     const [results] = await query<QuestioRepositoryModel[]>(sql);
 
-    return results;
+    const transformedResults = (results as Question[]).map(remapKeysToCamel);
+    return transformedResults as Question[];
+    //====================================================================//
   },
 
   async findById(id: string) {
@@ -52,7 +55,8 @@ export const QuestionsRepository = {
        WHERE id = UUID_TO_BIN('${id}');`,
     );
 
-    return results[0];
+    const transformedResults = results.map(remapKeysToCamel) as Question[];
+    return transformedResults[0];
   },
 
   async insert(body: CreateQuestion & { id: string }) {
