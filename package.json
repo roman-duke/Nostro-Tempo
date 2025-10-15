@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "\"Lorem Ipsum Idor\"",
   "main": "index.js",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "seed": "tsc db/seed.ts --noEmit true && tsx db/seed.ts",
