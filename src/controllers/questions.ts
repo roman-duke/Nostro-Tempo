@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { questionsService } from "../services/questions.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { NotFoundError } from "../utils/errors.js";
+import { questionClientSchema } from "../models/clientModels/question.js";
 
 export const questionsController = {
   createQuestion: asyncHandler(async (req: Request, res: Response) => {
@@ -15,9 +16,18 @@ export const questionsController = {
 
   getQuestions: asyncHandler(async (req: Request, res: Response) => {
     const queryParams = req.query as any;
-    const questions = await questionsService.getAllQuestions(queryParams);
+    const questionsResult = await questionsService.getAllQuestions(queryParams);
 
-    res.status(200).json(questions);
+    // Format the data for the client
+    const { data, ...rest } = questionsResult;
+    const formattedData = questionClientSchema.array().parse(data);
+
+    const result = {
+      data: formattedData,
+      ...rest,
+    };
+
+    res.status(200).json(result);
   }),
 
   getQuestion: asyncHandler(async (req: Request, res: Response) => {

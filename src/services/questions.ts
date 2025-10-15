@@ -39,10 +39,8 @@ export const questionsService = {
 
     const data = await QuestionsRepository.findAll(limit, offset);
 
-    const formattedData = questionClientSchema.array().parse(data);
-
     return {
-      data: formattedData,
+      data,
       meta: {
         total: totalQuestions,
         page: queryParams.page,
