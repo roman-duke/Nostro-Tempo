@@ -1,7 +1,5 @@
-import { UserAnswer } from "../models/answerChoice.js";
 import {
   CreateQuestion,
-  questionClientSchema,
   QuestionQuery,
 } from "../models/clientModels/question.js";
 import { Question } from "../models/domainModels/question.js";

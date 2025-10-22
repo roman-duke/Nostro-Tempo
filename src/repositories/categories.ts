@@ -1,5 +1,5 @@
 import { query } from "../db/connection.js";
-import { Category } from "../models/category.js";
+import { Category } from "../models/clientModels/category.js";
 
 export const CategoriesRepository = {
   async findAll(): Promise<Category[]> {

@@ -1,4 +1,4 @@
-import { Category } from "../models/category.js";
+import { Category } from "../models/clientModels/category.js";
 import { CategoriesRepository } from "../repositories/categories.js";
 
 export const categoriesService = {
