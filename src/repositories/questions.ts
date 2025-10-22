@@ -2,7 +2,10 @@ import { RowDataPacket } from "mysql2";
 import { query } from "../db/connection.js";
 import { CreateQuestion } from "../models/clientModels/question.js";
 import { Question } from "../models/domainModels/question.js";
-import camelToSnakeCase, { remapKeysToCamel, snakeToCamel } from "../utils/variableUtils.js";
+import camelToSnakeCase, {
+  remapKeysToCamel,
+  snakeToCamel,
+} from "../utils/variableUtils.js";
 import { DbCount } from "../types/index.js";
 
 type QuestioRepositoryModel = Question & RowDataPacket;
@@ -31,10 +34,10 @@ export const QuestionsRepository = {
 
     // TODO: Convert the filters to the respective sql. There should ideally be a helper for this operation
     const sqlLimits = `LIMIT ${limit} OFFSET ${offset}`;
-    sql += `${sqlLimits};`
+    sql += `${sqlLimits};`;
 
     // TODO: Contemplate if validation of the data received from the db
-    // is necessary in the short term.
+    // is necessary in the short term. It has been excluded for now.
     //============================ CODE SMELL ============================//
     const [results] = await query<QuestioRepositoryModel[]>(sql);
 
@@ -66,18 +69,31 @@ export const QuestionsRepository = {
   },
 
   async insert(body: CreateQuestion & { id: string }) {
-    await query(
-      `INSERT INTO questions
-       (id, name, description, difficulty, category_id)
-       VALUES (UUID_TO_BIN(?), ?, ?, ?, ?);
-      `,
-      Object.values(body),
-    );
+    // To cater for the two different kinds of CreateQuestion Schema
+    if (body.mediaType !== null) {
+      await query(
+        `INSERT INTO questions
+         (id, description, difficulty, question_type, category_id, created_by, media_type, media_url)
+         VALUES (UUID_TO_BIN(?), ?, ?, ?, ?, ?, ?, ?);
+        `,
+        Object.values(body),
+      );
+    } else {
+      await query(
+        `INSERT INTO questions
+         (id, description, difficulty, question_type, category_id, created_by, media_type)
+         VALUES (UUID_TO_BIN(?), ?, ?, ?, ?, UUID_TO_BIN(?), ?);
+        `,
+        Object.values(body),
+      );
+    }
 
     return body.id;
   },
 
   async update(id: string, body: Partial<Question>) {
+    // TODO: utility function for remapping the keys of the object to snake case.
+
     // Take the partial or full form of the question object
     // and then perform an update using raw sql.
 
@@ -103,7 +119,9 @@ export const QuestionsRepository = {
   },
 
   async countAll() {
-    const [result] = await query<DbCount[]>(`SELECT COUNT(*) AS total FROM questions;`);
+    const [result] = await query<DbCount[]>(
+      `SELECT COUNT(*) AS total FROM questions;`,
+    );
     return result[0].total;
   },
 };
