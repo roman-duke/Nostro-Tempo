@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from "express";
-import z, { ZodError, ZodObject, ZodRawShape } from "zod";
+import z, { ZodDiscriminatedUnion, ZodError, ZodObject, ZodRawShape } from "zod";
 import { ValidationError } from "../utils/errors.js";
+import { SomeType } from "zod/v4/core";
 
-export function zodBodyValidator<T extends ZodRawShape>(schema: ZodObject<T>) {
+export function zodBodyValidator<T extends SomeType[]>(schema: ZodDiscriminatedUnion<T>) {
   return (req: Request, _res: Response, next: NextFunction) => {
     try {
       // Validate the request object for the next middleware function

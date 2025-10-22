@@ -12,7 +12,7 @@ import "dotenv/config";
 // The performance would be benchmarked.
 
 // Make a connection to the database.
-export const db = await mysql
+export const db = mysql
   .createConnection({
     host: process.env.MYSQL_HOST,
     port: Number(process.env.MYSQL_PORT),
@@ -34,7 +34,7 @@ export const db = await mysql
 
 export async function query<T extends RowDataPacket[] | ResultSetHeader>(
   sql: string,
-  params?: (string | number)[],
+  params?: (string | number | null)[],
 ): Promise<[T, FieldPacket[]]> {
-  return db.query<T>(sql, params);
+  return (await db).query<T>(sql, params);
 }

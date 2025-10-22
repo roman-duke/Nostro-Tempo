@@ -16,11 +16,14 @@ export const QuestionsRepository = {
     let sql = `
       SELECT
         BIN_TO_UUID(id) AS id,
-        IF(correct_option_id IS NOT NULL, BIN_TO_UUID(correct_option_id), null) AS correct_option_id,
+        category_id,
         name,
         description,
+        media_url,
+        media_type,
+        question_type,
         difficulty,
-        category_id,
+        BIN_TO_UUID(created_by) AS created_by,
         created_at,
         updated_at
       FROM questions
@@ -44,11 +47,14 @@ export const QuestionsRepository = {
     const [results] = await query<QuestioRepositoryModel[]>(
       `SELECT
         BIN_TO_UUID(id) AS id,
-        IF(correct_option_id IS NOT NULL, BIN_TO_UUID(correct_option_id), null) AS correct_option_id,
+        category_id,
         name,
         description,
+        media_url,
+        media_type,
+        question_type,
         difficulty,
-        category_id,
+        BIN_TO_UUID(created_by) AS created_by,
         created_at,
         updated_at
        FROM questions

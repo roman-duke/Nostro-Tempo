@@ -35,7 +35,13 @@ export const questionsController = {
     const question = await questionsService.getQuestion(id);
     if (!question) throw new NotFoundError(`Question with id ${id} not found`);
 
-    res.status(200).json(question);
+    const clientQuestion = questionClientSchema.parse(question);
+
+    const result = {
+      data: clientQuestion,
+    };
+
+    res.status(200).json(result);
   }),
 
   updateQuestion: asyncHandler(async (req: Request, res: Response) => {
@@ -46,7 +52,11 @@ export const questionsController = {
     const payload = req.body;
     const updatedQuestion = await questionsService.updateQuestion(id, payload);
 
-    res.status(201).json(updatedQuestion);
+    const result = {
+      data: questionClientSchema.parse(updatedQuestion),
+    };
+
+    res.status(201).json(result);
   }),
 
   deleteQuestion: asyncHandler(async (req: Request, res: Response) => {
