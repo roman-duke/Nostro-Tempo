@@ -9,9 +9,9 @@ export const questionsController = {
     const payload = req.body;
     const result = await questionsService.createQuestion(payload);
 
-    // TODO: Transform the reponse to the required format for the application layer
-    // then send that result to the user
-    res.status(201).json(result);
+    // Format the data for the client
+    const formattedData = questionClientSchema.parse(result);
+    res.status(201).json(formattedData);
   }),
 
   getQuestions: asyncHandler(async (req: Request, res: Response) => {

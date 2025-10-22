@@ -11,14 +11,14 @@ const createBaseQuestionSchema = z.object({
 });
 
 const createMediaBasedQuestionSchema = z.object({
+  ...createBaseQuestionSchema.shape,
   mediaType: z.enum(["image", "audio", "video"]),
   mediaUrl: z.url(),
-  ...createBaseQuestionSchema.shape,
 });
 
 const createNoMediaQuestionSchema = z.object({
-  mediaType: z.literal(null),
   ...createBaseQuestionSchema.shape,
+  mediaType: z.literal(null),
 });
 
 export const createQuestionSchema = z.discriminatedUnion("mediaType", [
