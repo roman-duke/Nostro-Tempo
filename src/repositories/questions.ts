@@ -1,12 +1,12 @@
 import { RowDataPacket } from "mysql2";
-import { query } from "../db/connection.js";
-import { CreateQuestion } from "../models/clientModels/question.js";
-import { Question } from "../models/domainModels/question.js";
+import { query } from "../db/connection";
+import { CreateQuestion } from "../models/clientModels/question";
+import { Question } from "../models/domainModels/question";
 import camelToSnakeCase, {
   remapKeysToCamel,
   snakeToCamel,
-} from "../utils/variableUtils.js";
-import { DbCount } from "../types/index.js";
+} from "../utils/variableUtils";
+import { DbCount } from "../types/index";
 
 type QuestioRepositoryModel = Question & RowDataPacket;
 

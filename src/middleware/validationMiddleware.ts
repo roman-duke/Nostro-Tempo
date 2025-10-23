@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import z, { ZodDiscriminatedUnion, ZodError, ZodObject, ZodRawShape } from "zod";
-import { ValidationError } from "../utils/errors.js";
+import { ValidationError } from "../utils/errors";
 import { SomeType } from "zod/v4/core";
 
 export function zodBodyValidator<T extends SomeType[]>(schema: ZodDiscriminatedUnion<T>) {

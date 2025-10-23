@@ -1,16 +1,16 @@
 // Questions route module
 import express from "express";
-import { questionsController } from "../controllers/questions.js";
+import { questionsController } from "../controllers/questions";
 import {
   zodBodyValidator,
   zodIdValidator,
   zodQueryValidator,
-} from "../middleware/validationMiddleware.js";
+} from "../middleware/validationMiddleware";
 import {
   createQuestionSchema,
   partialQuestionSchema,
   questionsQuerySchema,
-} from "../models/clientModels/question.js";
+} from "../models/clientModels/question";
 
 const questionsRoute = express.Router();
 

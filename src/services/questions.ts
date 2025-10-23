@@ -1,11 +1,11 @@
 import {
   CreateQuestion,
   QuestionQuery,
-} from "../models/clientModels/question.js";
-import { Question } from "../models/domainModels/question.js";
-import { QuestionsRepository } from "../repositories/questions.js";
+} from "../models/clientModels/question";
+import { Question } from "../models/domainModels/question";
+import { QuestionsRepository } from "../repositories/questions";
 import { v4 as uuidv4 } from "uuid";
-import { Pagination } from "../types/index.js";
+import { Pagination } from "../types/index";
 
 export const questionsService = {
   createQuestion: async (payload: CreateQuestion) => {

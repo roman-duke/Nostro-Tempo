@@ -1,9 +1,9 @@
 import express, { NextFunction, Request, Response } from "express";
-import { categoriesRoute } from "./categories.js";
-import { questionsRoute } from "./questions.js";
-import { answerChoicesRoute } from "./answerChoices.js";
+import { categoriesRoute } from "./categories";
+import { questionsRoute } from "./questions";
+import { answerChoicesRoute } from "./answerChoices";
 // import { triviaSessionRoute } from "./triviaSession.js";
-import { NotFoundError, ValidationError } from "../utils/errors.js";
+import { NotFoundError, ValidationError } from "../utils/errors";
 
 export const appRouter = express.Router();
 

@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { questionsService } from "../services/questions.js";
-import { asyncHandler } from "../utils/asyncHandler.js";
-import { NotFoundError } from "../utils/errors.js";
-import { questionClientSchema } from "../models/clientModels/question.js";
+import { questionsService } from "../services/questions";
+import { asyncHandler } from "../utils/asyncHandler";
+import { NotFoundError } from "../utils/errors";
+import { questionClientSchema } from "../models/clientModels/question";
 
 export const questionsController = {
   createQuestion: asyncHandler(async (req: Request, res: Response) => {
