@@ -34,7 +34,7 @@ export const db = mysql
 
 export async function query<T extends RowDataPacket[] | ResultSetHeader>(
   sql: string,
-  params?: (string | number | null)[],
+  params?: any[],
 ): Promise<[T, FieldPacket[]]> {
   return (await db).query<T>(sql, params);
 }

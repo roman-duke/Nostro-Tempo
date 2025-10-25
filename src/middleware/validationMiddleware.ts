@@ -3,7 +3,7 @@ import z, { ZodDiscriminatedUnion, ZodError, ZodObject, ZodRawShape } from "zod"
 import { ValidationError } from "../utils/errors";
 import { SomeType } from "zod/v4/core";
 
-export function zodBodyValidator<T extends SomeType[]>(schema: ZodDiscriminatedUnion<T>) {
+export function zodBodyValidator<T extends SomeType[]>(schema: ZodDiscriminatedUnion<T> | ZodObject) {
   return (req: Request, _res: Response, next: NextFunction) => {
     try {
       // Validate the request object for the next middleware function
