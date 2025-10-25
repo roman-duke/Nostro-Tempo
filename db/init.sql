@@ -43,6 +43,7 @@ CREATE TABLE questions (
   time_limit_ms INT DEFAULT 10000,
   match_type ENUM('levenshtein', 'fuzzy', 'exact') DEFAULT 'exact',
   explanation_text TEXT,
+  status ENUM('active', 'archived', 'deleted', 'draft') DEFAULT 'draft',
   created_by BINARY(16) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -118,15 +119,11 @@ CREATE TABLE quiz_analytics (
 CREATE TABLE trivia_sessions (
   id BINARY(16) PRIMARY KEY NOT NULL,
   quiz_id BINARY(16) DEFAULT NULL,
+  difficulty_level ENUM('EASY', 'MEDIUM', 'HARD') NOT NULL,
   num_of_questions INT NOT NULL,
-  expires_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  is_timed BOOLEAN DEFAULT TRUE,
+  expires_at TIMESTAMP,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  -- user_id BINARY(16) NOT NULL,
-  -- correct_answers INT NOT NULL,
-  -- total_score INT DEFAULT 0,
-  -- started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  -- completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  -- updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (quiz_id) REFERENCES quizzes(id)
 );
 
@@ -136,6 +133,7 @@ CREATE TABLE session_users_answers (
   question_snapshot_id BINARY(16) NOT NULL,
   question_order INT NOT NULL,
   selected_answer VARCHAR(255),
+  total_score INT DEFAULT 0,
   is_correct BOOLEAN DEFAULT NULL,
   time_spent_ms INT DEFAULT NULL,
   started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
