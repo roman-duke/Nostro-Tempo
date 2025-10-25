@@ -26,6 +26,9 @@ export const QuestionsRepository = {
         media_type,
         question_type,
         difficulty,
+        match_type,
+        time_limit_ms,
+        explanation_text,
         BIN_TO_UUID(created_by) AS created_by,
         created_at,
         updated_at
@@ -57,6 +60,9 @@ export const QuestionsRepository = {
         media_type,
         question_type,
         difficulty,
+        match_type,
+        time_limi_ms,
+        explanation_text,
         BIN_TO_UUID(created_by) AS created_by,
         created_at,
         updated_at
@@ -73,16 +79,16 @@ export const QuestionsRepository = {
     if (body.mediaType !== null) {
       await query(
         `INSERT INTO questions
-         (id, description, difficulty, question_type, category_id, created_by, media_type, media_url)
-         VALUES (UUID_TO_BIN(?), ?, ?, ?, ?, ?, ?, ?);
+         (id, description, difficulty, question_type, category_id, created_by, media_type, media_url, match_type, time_limit_ms, explanation_text)
+         VALUES (UUID_TO_BIN(?), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
         `,
         Object.values(body),
       );
     } else {
       await query(
         `INSERT INTO questions
-         (id, description, difficulty, question_type, category_id, created_by, media_type)
-         VALUES (UUID_TO_BIN(?), ?, ?, ?, ?, UUID_TO_BIN(?), ?);
+         (id, description, difficulty, question_type, category_id, created_by, media_type, match_type, time_limit_ms, explanation_text)
+         VALUES (UUID_TO_BIN(?), ?, ?, ?, ?, UUID_TO_BIN(?), ?, ?, ?, ?);
         `,
         Object.values(body),
       );

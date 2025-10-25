@@ -8,6 +8,9 @@ const createBaseQuestionSchema = z.object({
   questionType: z.enum(["multiple_choice", "true_false", "fill_in_blank"]),
   categoryId: z.coerce.number(),
   createdBy: z.uuidv4(),
+  matchType: z.enum(["levenshtein", "fuzzy", "exact"]),
+  timeLimitMs: z.coerce.number(),
+  explanationText: z.string(),
 });
 
 const createMediaBasedQuestionSchema = z.object({

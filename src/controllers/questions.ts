@@ -2,11 +2,11 @@ import { Request, Response } from "express";
 import { questionsService } from "../services/questions";
 import { asyncHandler } from "../utils/asyncHandler";
 import { NotFoundError } from "../utils/errors";
-import { questionClientSchema } from "../models/clientModels/question";
+import { CreateQuestion, questionClientSchema } from "../models/clientModels/question";
 
 export const questionsController = {
   createQuestion: asyncHandler(async (req: Request, res: Response) => {
-    const payload = req.body;
+    const payload = req.body as CreateQuestion;
     const result = await questionsService.createQuestion(payload);
 
     // Format the data for the client
