@@ -33,6 +33,7 @@ CREATE TABLE categories (
 
 CREATE TABLE questions (
   id BINARY(16) PRIMARY KEY,
+  version INT NOT NULL DEFAULT 1,
   category_id INT NOT NULL,
   name VARCHAR(255) NULL,
   description TEXT NOT NULL,
@@ -52,7 +53,8 @@ CREATE TABLE questions (
 );
 
 CREATE TABLE questions_snapshots (
-  id BINARY(16) PRIMARY KEY,
+  id BINARY(16) NOT NULL,
+  snapshot_version INT NOT NULL DEFAULT 1,
   category_id INT NOT NULL,
   name VARCHAR(255) NULL,
   description TEXT NOT NULL,
@@ -64,11 +66,14 @@ CREATE TABLE questions_snapshots (
   match_type ENUM('levenshtein', 'fuzzy', 'exact') DEFAULT 'exact',
   explanation_text TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id, snapshot_version),
+  CONSTRAINT fk_qs_question FOREIGN KEY (id) REFERENCES questions(id),
   CONSTRAINT fk_category_snapshot FOREIGN KEY (category_id) REFERENCES categories(id)
 );
 
 CREATE TABLE question_answers (
   id BINARY(16) PRIMARY KEY,
+  version INT NOT NULL DEFAULT 1,
   question_id BINARY(16) NOT NULL,
   answer_text VARCHAR(255) NOT NULL,
   is_correct BOOLEAN,
@@ -78,12 +83,15 @@ CREATE TABLE question_answers (
 );
 
 CREATE TABLE question_answers_snapshots (
-  id BINARY(16) PRIMARY KEY,
-  question_id BINARY(16) NOT NULL,
+  id BINARY(16) NOT NULL,
+  answer_snapshot_version INT NOT NULL DEFAULT 1,
+  question_snapshot_id BINARY(16) NOT NULL,
+  question_snapshot_version INT NOT NULL DEFAULT 1,
   answer_text VARCHAR(255) NOT NULL,
   is_correct BOOLEAN,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT fk_question_snapshot FOREIGN KEY (question_id) REFERENCES questions_snapshots(id)
+  PRIMARY KEY (id, answer_snapshot_version),
+  CONSTRAINT fk_qas_qs FOREIGN KEY (question_snapshot_id, question_snapshot_version) REFERENCES questions_snapshots(id, snapshot_version)
 );
 
 CREATE TABLE quizzes (
@@ -131,6 +139,8 @@ CREATE TABLE session_users_answers (
   session_id BINARY(16) NOT NULL,
   user_id BINARY(16) NOT NULL,
   question_snapshot_id BINARY(16) NOT NULL,
+  question_snapshot_version INT NOT NULL,
+  question_answers_snapshot_version INT NOT NULL,
   question_order INT NOT NULL,
   selected_answer VARCHAR(255),
   total_score INT DEFAULT 0,
@@ -139,6 +149,6 @@ CREATE TABLE session_users_answers (
   started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY(user_id, question_snapshot_id, session_id),
-  CONSTRAINT fk_session_question FOREIGN KEY (question_snapshot_id) REFERENCES questions_snapshots(id),
+  CONSTRAINT fk_suas_question FOREIGN KEY (question_snapshot_id, question_snapshot_version) REFERENCES questions_snapshots(id, snapshot_version),
   CONSTRAINT fk_session FOREIGN KEY (session_id) REFERENCES trivia_sessions(id)
 );

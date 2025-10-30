@@ -35,7 +35,7 @@ export const questionsService = {
 
     const offset = (queryParams.page - 1) * limit;
 
-    const data = await QuestionsRepository.findAll(limit, offset);
+    const data = await QuestionsRepository.findAll({ limit, offset });
 
     return {
       data,
