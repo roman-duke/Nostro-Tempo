@@ -7,18 +7,31 @@ import camelToSnakeCase, {
   snakeToCamel,
 } from "../utils/variableUtils";
 import { DbCount } from "../types/index";
+import { queryFilterBuilder } from "../utils/buildQueryParams";
+import relationsBuilder from "../utils/relationsGenerator";
 
 type QuestioRepositoryModel = Question & RowDataPacket;
 
+type QuestionFilter = {
+  difficulty: "EASY" | "MEDIUM" | "HARD",
+}
+
 export const QuestionsRepository = {
-  async findAll(
-    limit: number,
-    offset: number,
-    filter?: object,
-  ): Promise<Question[]> {
+  async findAll({
+    limit,
+    offset = 0,
+    filter,
+  }: {
+    limit: number;
+    offset?: number;
+    filter?: QuestionFilter;
+  }): Promise<Question[]> {
+    const sqlFilterConstraint = queryFilterBuilder({ filterObj: filter });
+
     let sql = `
       SELECT
-        BIN_TO_UUID(id) AS id,
+        BIN_TO_UUID(q.id) AS id,
+        q.version AS version,
         category_id,
         name,
         description,
@@ -29,22 +42,36 @@ export const QuestionsRepository = {
         match_type,
         time_limit_ms,
         explanation_text,
+        status,
         BIN_TO_UUID(created_by) AS created_by,
-        created_at,
-        updated_at
-      FROM questions
+        q.created_at,
+        q.updated_at,
+        BIN_TO_UUID(qa.id) AS question_answers_id,
+        qa.version AS question_answers_version,
+        qa.answer_text AS question_answers_answer_text,
+        qa.is_correct AS question_answers_is_correct,
+        qa.created_at AS question_answers_created_at,
+        qa.updated_at AS question_answers_updated_at
+      FROM (
+        SELECT DISTINCT questions.id
+        FROM questions
+        INNER JOIN question_answers
+              ON questions.id = question_answers.question_id
+        ${sqlFilterConstraint}
+        LIMIT ${limit} OFFSET ${offset}
+      ) AS limited
+      INNER JOIN questions q ON q.id = limited.id
+      INNER JOIN question_answers qa
+            ON q.id = qa.question_id
     `;
-
-    // TODO: Convert the filters to the respective sql. There should ideally be a helper for this operation
-    const sqlLimits = `LIMIT ${limit} OFFSET ${offset}`;
-    sql += `${sqlLimits};`;
 
     // TODO: Contemplate if validation of the data received from the db
     // is necessary in the short term. It has been excluded for now.
     //============================ CODE SMELL ============================//
     const [results] = await query<QuestioRepositoryModel[]>(sql);
 
-    const transformedResults = (results as Question[]).map(remapKeysToCamel);
+    const aggregatedResults = relationsBuilder(results, 'question_answers', 'options');
+    const transformedResults = (aggregatedResults as Question[]).map(remapKeysToCamel);
     return transformedResults as Question[];
     //====================================================================//
   },
@@ -95,6 +122,15 @@ export const QuestionsRepository = {
     }
 
     return body.id;
+  },
+
+  async insertIntoQuestionSnapshot(body: Question) {
+    await query(
+      `INSERT INTO questions_snapshots
+      (id, category_id, name, description, media_url, media_type, question_type, difficulty, time_limit_ms, match_type, explanation_text, created_at)
+      VALUES ()
+      `
+    )
   },
 
   async update(id: string, body: Partial<Question>) {

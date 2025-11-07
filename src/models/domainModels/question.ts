@@ -1,4 +1,5 @@
 import z from "zod";
+import { questionAnswersSchema } from "./question-answers";
 
 // Define Schemas for the Question Model in the Business Logic Layer
 export const questionSchema = z.object({
@@ -13,9 +14,11 @@ export const questionSchema = z.object({
   timeLimitMs: z.coerce.number(),
   matchType: z.enum(["levenshtein", "fuzzy", "exact"]),
   explanationText: z.string().nullable(),
+  status: z.enum(["active", "archived", "deleted", "draft"]),
   createdBy: z.uuidv4(),
   createdAt: z.date(),
   updatedAt: z.date(),
+  options: questionAnswersSchema,
 });
 
 export type Question = z.infer<typeof questionSchema>;

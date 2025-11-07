@@ -1,5 +1,6 @@
 import z from "zod";
 import { questionSchema } from "../domainModels/question";
+import { questionAnswersClientSchema } from "./question-answers";
 
 // Define Schemas for the Question Model in the Application Layer
 const createBaseQuestionSchema = z.object({
@@ -44,10 +45,16 @@ export const questionsQuerySchema = z.object({
 });
 export type QuestionQuery = z.infer<typeof questionsQuerySchema>;
 
-export const questionClientSchema = questionSchema.transform((data) => {
+const questionWithOptionsSchema = z.object({
+  ...questionSchema.shape,
+  options: questionAnswersClientSchema.array(),
+});
+
+// Strip out unwanted options
+export const questionClientSchema = questionWithOptionsSchema.transform((data) => {
   if (data.name === null || data.name) {
-    const { name, createdBy, ...rest } = data;
+    const { name, createdBy, status, ...rest } = data;
     return rest;
   }
 });
-export type QuestionClient = z.infer<typeof questionClientSchema>;
+export type QuestionClient = z.infer<typeof questionWithOptionsSchema>;
