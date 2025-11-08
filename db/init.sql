@@ -14,9 +14,10 @@ CREATE TABLE users (
   username VARCHAR(255) NOT NULL,
   first_name VARCHAR(100) NOT NULL,
   last_name VARCHAR(100) NOT NULL,
-  role_id INT NOT NULL,
   email VARCHAR(255) UNIQUE NOT NULL,
+  role_id INT NOT NULL,
   password_hash VARCHAR(255) NULL,
+  total_score INT DEFAULT 0,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT fk_role FOREIGN KEY (role_id) REFERENCES roles(id)
@@ -135,20 +136,47 @@ CREATE TABLE trivia_sessions (
   FOREIGN KEY (quiz_id) REFERENCES quizzes(id)
 );
 
+CREATE TABLE session_questions (
+  session_id BINARY(16) NOT NULL,
+  question_snapshot_id BINARY(16) NOT NULL,
+  question_snapshot_version INT NOT NULL,
+  question_order INT NOT NULL,
+  CONSTRAINT fk_sq_question FOREIGN KEY (question_snapshot_id, question_snapshot_version) REFERENCES questions_snapshots(id, snapshot_version),
+  CONSTRAINT fk_sq_session FOREIGN KEY (session_id) REFERENCES trivia_sessions(id)
+);
+
 CREATE TABLE session_users_answers (
   session_id BINARY(16) NOT NULL,
   user_id BINARY(16) NOT NULL,
   question_snapshot_id BINARY(16) NOT NULL,
   question_snapshot_version INT NOT NULL,
-  question_answers_snapshot_version INT NOT NULL,
-  question_order INT NOT NULL,
+  -- question_answers_snapshot_id BINARY(16) NOT NULL,
+  -- question_answers_snapshot_version INT NOT NULL,
+  -- question_order INT NOT NULL,
   selected_answer VARCHAR(255),
   total_score INT DEFAULT 0,
   is_correct BOOLEAN DEFAULT NULL,
   time_spent_ms INT DEFAULT NULL,
-  started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  -- started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  -- completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY(user_id, question_snapshot_id, session_id),
   CONSTRAINT fk_suas_question FOREIGN KEY (question_snapshot_id, question_snapshot_version) REFERENCES questions_snapshots(id, snapshot_version),
+  -- CONSTRAINT fk_suas_answer FOREIGN KEY (question_answers_snapshot_id, question_answers_snapshot_version) REFERENCES question_answers_snapshots(id, answer_snapshot_version)
   CONSTRAINT fk_session FOREIGN KEY (session_id) REFERENCES trivia_sessions(id)
+);
+
+CREATE TABLE session_users_summary (
+  id BINARY(16) PRIMARY KEY,
+  session_id BINARY(16) NOT NULL,
+  user_id BINARY(16) NOT NULL,
+  total_score INT NOT NULL DEFAULT 0,
+  total_questions INT NOT NULL DEFAULT 10,
+  correct_answers INT NOT NULL DEFAULT 0,
+  average_time_ms INT DEFAULT NULL,
+  started_at TIMESTAMP DEFAULT NULL,
+  completed_at TIMESTAMP DEFAULT NULL,
+  rank_in_session INT DEFAULT NULL,
+  CONSTRAINT fk_summary_session FOREIGN KEY (session_id) REFERENCES trivia_sessions(id),
+  CONSTRAINT fk_summary_user FOREIGN KEY (user_id) REFERENCES users(id),
+  UNIQUE KEY uq_summary_session_user (session_id, user_id)
 );
