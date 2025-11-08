@@ -4,6 +4,7 @@ import { questionAnswersSchema } from "./question-answers";
 // Define Schemas for the Question Model in the Business Logic Layer
 export const questionSchema = z.object({
   id: z.uuidv4(),
+  version: z.coerce.number(),
   name: z.string().nullable(),
   description: z.string(),
   categoryId: z.coerce.number(),

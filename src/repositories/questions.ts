@@ -79,7 +79,8 @@ export const QuestionsRepository = {
   async findById(id: string) {
     const [results] = await query<QuestioRepositoryModel[]>(
       `SELECT
-        BIN_TO_UUID(id) AS id,
+        BIN_TO_UUID(q.id) AS id,
+        q.version AS version,
         category_id,
         name,
         description,
@@ -88,16 +89,26 @@ export const QuestionsRepository = {
         question_type,
         difficulty,
         match_type,
-        time_limi_ms,
+        time_limit_ms,
         explanation_text,
+        status,
         BIN_TO_UUID(created_by) AS created_by,
-        created_at,
-        updated_at
-       FROM questions
-       WHERE id = UUID_TO_BIN('${id}');`,
+        q.created_at,
+        q.updated_at,
+        BIN_TO_UUID(qa.id) AS question_answers_id,
+        qa.version AS question_answers_version,
+        qa.answer_text AS question_answers_answer_text,
+        qa.is_correct AS question_answers_is_correct,
+        qa.created_at AS question_answers_created_at,
+        qa.updated_at AS question_answers_updated_at
+       FROM questions q
+       INNER JOIN question_answers qa
+              ON q.id = qa.question_id
+       WHERE q.id = UUID_TO_BIN('${id}');`,
     );
 
-    const transformedResults = results.map(remapKeysToCamel) as Question[];
+    const aggregatedResults = relationsBuilder(results, 'question_answers', 'options');
+    const transformedResults = (aggregatedResults).map(remapKeysToCamel) as Question[];
     return transformedResults[0];
   },
 
