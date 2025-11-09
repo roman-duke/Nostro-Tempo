@@ -36,5 +36,5 @@ export async function query<T extends RowDataPacket[] | ResultSetHeader>(
   sql: string,
   params?: any[],
 ): Promise<[T, FieldPacket[]]> {
-  return (await db).query<T>(sql, params);
+  return (await db).execute<T>(sql, params);
 }
