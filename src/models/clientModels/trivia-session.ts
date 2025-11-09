@@ -3,12 +3,11 @@ import z from "zod";
 const baseTriviaSessionSchema = z.object({
   userId: z.uuidv4(),
   //------ We shall leave this as null for the time being -------//
-  quizId: z.literal(null),
+  quizId: z.uuidv4().nullable(),
   //-------------------------------------------------------------//
   numOfQuestions: z.coerce.number(),
   difficultyLevel: z.enum(["EASY", "MEDIUM", "HARD"]),
-  categoryId: z.int().nullable(),
-  random: z.boolean(),
+  categoryId: z.int().array(),
 });
 
 const createTimedTriviaSessionSchema = z.object({
