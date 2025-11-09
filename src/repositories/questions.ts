@@ -1,6 +1,6 @@
 import { RowDataPacket } from "mysql2";
 import { query } from "../db/connection";
-import { CreateQuestion } from "../models/clientModels/question";
+import { CreateQuestion, QuestionQuery } from "../models/clientModels/question";
 import { Question } from "../models/domainModels/question";
 import camelToSnakeCase, {
   remapKeysToCamel,
@@ -12,10 +12,6 @@ import relationsBuilder from "../utils/relationsGenerator";
 
 type QuestioRepositoryModel = Question & RowDataPacket;
 
-type QuestionFilter = {
-  difficulty: "EASY" | "MEDIUM" | "HARD",
-}
-
 export const QuestionsRepository = {
   async findAll({
     limit,
@@ -24,9 +20,9 @@ export const QuestionsRepository = {
   }: {
     limit: number;
     offset?: number;
-    filter?: QuestionFilter;
+    filter?: QuestionQuery["filter"];
   }): Promise<Question[]> {
-    const sqlFilterConstraint = queryFilterBuilder({ filterObj: filter });
+    const { filterClause, filterParams } = queryFilterBuilder({ filterObj: filter });
 
     let sql = `
       SELECT
@@ -57,7 +53,7 @@ export const QuestionsRepository = {
         FROM questions
         INNER JOIN question_answers
               ON questions.id = question_answers.question_id
-        ${sqlFilterConstraint}
+        ${filterClause}
         LIMIT ${limit} OFFSET ${offset}
       ) AS limited
       INNER JOIN questions q ON q.id = limited.id
@@ -68,7 +64,7 @@ export const QuestionsRepository = {
     // TODO: Contemplate if validation of the data received from the db
     // is necessary in the short term. It has been excluded for now.
     //============================ CODE SMELL ============================//
-    const [results] = await query<QuestioRepositoryModel[]>(sql);
+    const [results] = await query<QuestioRepositoryModel[]>(sql, filterParams);
 
     const aggregatedResults = relationsBuilder(results, 'question_answers', 'options');
     const transformedResults = (aggregatedResults as Question[]).map(remapKeysToCamel);

@@ -42,6 +42,23 @@ export type PartialQuestion = z.infer<typeof partialQuestionSchema>;
 export const questionsQuerySchema = z.object({
   page: z.coerce.number().positive().optional().default(1),
   limit: z.coerce.number().positive().optional().default(10),
+  filter: z
+    .object({
+      categoryIds: z.int().array().optional(),
+      ...questionSchema
+        .omit({
+          id: true,
+          options: true,
+          categoryId: true,
+          description: true,
+          explanationText: true,
+          // createdAt: true,
+          // updatedAt: true,
+        })
+        .partial().shape,
+    })
+    .optional(),
+  // orderBy: z.object
 });
 export type QuestionQuery = z.infer<typeof questionsQuerySchema>;
 
@@ -51,10 +68,12 @@ const questionWithOptionsSchema = z.object({
 });
 
 // Strip out unwanted options
-export const questionClientSchema = questionWithOptionsSchema.transform((data) => {
-  if (data.name === null || data.name) {
-    const { name, createdBy, status, ...rest } = data;
-    return rest;
-  }
-});
+export const questionClientSchema = questionWithOptionsSchema.transform(
+  (data) => {
+    if (data.name === null || data.name) {
+      const { name, createdBy, status, ...rest } = data;
+      return rest;
+    }
+  },
+);
 export type QuestionClient = z.infer<typeof questionWithOptionsSchema>;
