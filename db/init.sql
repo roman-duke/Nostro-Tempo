@@ -99,23 +99,24 @@ CREATE TABLE quizzes (
   id BINARY(16) PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
   description VARCHAR(512) NOT NULL,
+  is_ad_hoc BOOLEAN NOT NULL,
   -- num_of_questions INT NOT NULL, ---> This is meant to be computed because it is dynamic (dependent on quiz_questions)
-  category_id INT NOT NULL,
+  -- category_id INT NOT NULL,
   overall_difficulty ENUM('EASY', 'MEDIUM', 'HARD') NOT NULL,
   created_by BINARY(16) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  CONSTRAINT fk_quiz_created_by FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE CASCADE
+  CONSTRAINT fk_quizzes_users FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE quiz_questions (
   quiz_id BINARY(16) NOT NULL,
-  question_id BINARY(16) NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (quiz_id, question_id),
-  FOREIGN KEY (question_id) REFERENCES questions(id) ON DELETE CASCADE,
-  FOREIGN KEY (quiz_id) REFERENCES quizzes(id) ON DELETE CASCADE
+  question_snapshot_id BINARY(16) NOT NULL,
+  question_snapshot_version INT NOT NULL,
+  question_order INT NOT NULL,
+  PRIMARY KEY (quiz_id, question_snapshot_id),
+  CONSTRAINT fk_quiz_questions_qs FOREIGN KEY (question_snapshot_id, question_snapshot_version) REFERENCES questions_snapshots(id, snapshot_version) ON DELETE CASCADE,
+  CONSTRAINT fk_quiz_questions_quizzes FOREIGN KEY (quiz_id) REFERENCES quizzes(id) ON DELETE CASCADE
 );
 
 CREATE TABLE quiz_analytics (
@@ -127,41 +128,36 @@ CREATE TABLE quiz_analytics (
 
 CREATE TABLE trivia_sessions (
   id BINARY(16) PRIMARY KEY NOT NULL,
-  quiz_id BINARY(16) DEFAULT NULL,
-  difficulty_level ENUM('EASY', 'MEDIUM', 'HARD') NOT NULL,
-  num_of_questions INT NOT NULL,
+  quiz_id BINARY(16) NOT NULL,
+  quiz_title VARCHAR(255) NOT NULL,
+  -- difficulty_level ENUM('EASY', 'MEDIUM', 'HARD') NOT NULL,
+  -- num_of_questions INT NOT NULL,
   is_timed BOOLEAN DEFAULT TRUE,
   expires_at TIMESTAMP,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (quiz_id) REFERENCES quizzes(id)
+  CONSTRAINT fk_trivia_sessions_quizzes FOREIGN KEY (quiz_id) REFERENCES quizzes(id)
 );
 
-CREATE TABLE session_questions (
-  session_id BINARY(16) NOT NULL,
-  question_snapshot_id BINARY(16) NOT NULL,
-  question_snapshot_version INT NOT NULL,
-  question_order INT NOT NULL,
-  CONSTRAINT fk_sq_question FOREIGN KEY (question_snapshot_id, question_snapshot_version) REFERENCES questions_snapshots(id, snapshot_version),
-  CONSTRAINT fk_sq_session FOREIGN KEY (session_id) REFERENCES trivia_sessions(id)
-);
+-- CREATE TABLE session_questions (
+--   session_id BINARY(16) NOT NULL,
+--   question_snapshot_id BINARY(16) NOT NULL,
+--   question_snapshot_version INT NOT NULL,
+--   question_order INT NOT NULL,
+--   CONSTRAINT fk_sq_question FOREIGN KEY (question_snapshot_id, question_snapshot_version) REFERENCES questions_snapshots(id, snapshot_version),
+--   CONSTRAINT fk_sq_session FOREIGN KEY (session_id) REFERENCES trivia_sessions(id)
+-- );
 
 CREATE TABLE session_users_answers (
   session_id BINARY(16) NOT NULL,
   user_id BINARY(16) NOT NULL,
   question_snapshot_id BINARY(16) NOT NULL,
   question_snapshot_version INT NOT NULL,
-  -- question_answers_snapshot_id BINARY(16) NOT NULL,
-  -- question_answers_snapshot_version INT NOT NULL,
-  -- question_order INT NOT NULL,
   selected_answer VARCHAR(255),
   total_score INT DEFAULT 0,
   is_correct BOOLEAN DEFAULT NULL,
   time_spent_ms INT DEFAULT NULL,
-  -- started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  -- completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY(user_id, question_snapshot_id, session_id),
   CONSTRAINT fk_suas_question FOREIGN KEY (question_snapshot_id, question_snapshot_version) REFERENCES questions_snapshots(id, snapshot_version),
-  -- CONSTRAINT fk_suas_answer FOREIGN KEY (question_answers_snapshot_id, question_answers_snapshot_version) REFERENCES question_answers_snapshots(id, answer_snapshot_version)
   CONSTRAINT fk_session FOREIGN KEY (session_id) REFERENCES trivia_sessions(id)
 );
 
