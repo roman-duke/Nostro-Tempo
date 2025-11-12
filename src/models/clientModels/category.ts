@@ -5,6 +5,6 @@ export interface Category extends RowDataPacket {
   name: string;
   description: string;
   image: string;
-  created_at?: string;
-  updated_at?: string;
+  createdAt: string;
+  updatedAt: string;
 }

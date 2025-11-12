@@ -1,11 +1,26 @@
 import { query } from "../db/connection.js";
 import { Category } from "../models/clientModels/category.js";
+import { remapKeysToCamel } from "../utils/variableUtils.js";
+
+type CategoriesFilter = {
+  categoryIds: number[];
+};
 
 export const CategoriesRepository = {
-  async findAll(): Promise<Category[]> {
-    const [results] = await query<Category[]>("SELECT * FROM categories;");
+  async findAll(filter?: CategoriesFilter) {
+    const filterClause = filter?.categoryIds
+      ? `WHERE id IN (filter.categoryIds.join())`
+      : "";
 
-    return results;
+    const [results] = await query<Category[]>(
+      `
+        SELECT * FROM categories
+        ${filterClause};
+      `,
+    );
+
+    const transformedResults = (results).map(remapKeysToCamel)
+    return transformedResults as Category[];
   },
 
   async findById(id: string) {
@@ -45,7 +60,7 @@ export const CategoriesRepository = {
   },
 
   async delete(id: string) {
-    const [results] = await query(
+    await query(
       `DELETE FROM categories
        WHERE id = ${id};
       `,
