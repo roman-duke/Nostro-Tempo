@@ -8,8 +8,9 @@ export function queryFilterBuilder({ filterObj }: { filterObj?: object }) {
     const filterValue = filterObj[key as keyof typeof filterObj] as any;
 
     if (Array.isArray(filterValue)) {
-      clauses.push(`${key} IN (?)`);
-      filterParams.push(filterValue.join(","));
+      const placeholders = filterValue.map(() => '?').join(',');
+      clauses.push(`${key} IN (${placeholders})`);
+      filterParams.push(...filterValue);
     } else {
       clauses.push(`${key} = ?`);
       filterParams.push(filterValue);
