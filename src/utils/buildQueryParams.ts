@@ -2,7 +2,7 @@ export function queryFilterBuilder({ filterObj }: { filterObj?: object }) {
   const clauses = [];
   const filterParams: any[] = [];
 
-  if (!filterObj) return { clause: "", filterParams };
+  if (!filterObj) return { filterClause: "", filterParams };
 
   for (const key in filterObj) {
     const filterValue = filterObj[key as keyof typeof filterObj] as any;
@@ -14,10 +14,8 @@ export function queryFilterBuilder({ filterObj }: { filterObj?: object }) {
       clauses.push(`${key} = ?`);
       filterParams.push(filterValue);
     }
-    // sqlFilterConstraint += `AND ${key} = '${filterValue}'`;
   }
 
-  // return sqlFilterConstraint;
   return {
     filterClause: clauses.length ? "WHERE " + clauses.join(" AND ") : "",
     filterParams,
