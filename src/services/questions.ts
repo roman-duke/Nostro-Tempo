@@ -26,21 +26,22 @@ export const questionsService = {
 
   getAllQuestions: async (queryParams: QuestionQuery) => {
     const { limit, filter } = queryParams;
-    const totalQuestions = await QuestionsRepository.countAll();
+    const totalQuestions = await QuestionsRepository.countAll(filter);
 
     const pagesCount = Math.ceil(totalQuestions / limit);
     if (queryParams.page > pagesCount) {
       queryParams.page = pagesCount;
     }
-
     const offset = (queryParams.page - 1) * limit;
 
     const data = await QuestionsRepository.findAll({ limit, offset, filter });
+    const sizeOfData = data.length;
 
     return {
       data,
       meta: {
         total: totalQuestions,
+        size: sizeOfData,
         page: queryParams.page,
         limit,
         totalPages: pagesCount,
