@@ -31,7 +31,7 @@ export function snakeToCamelCase(str: string): string {
 // (I'd have probably starteed using an ORM then though)
 export function remapKeysToCamel<T extends Record<string, any>>(
   obj: T,
-): RemapKeys<T> {
+): RemapKeysToCamel<T> {
   if (obj === null || typeof obj !== "object") return obj as any;
 
   if (Array.isArray(obj)) {
@@ -49,13 +49,47 @@ export function remapKeysToCamel<T extends Record<string, any>>(
   }, {} as T);
 }
 
+export function remapKeysToSnake<T extends Record<string, any>>(
+  obj: T,
+): RemapKeysToSnake<T> {
+  if (obj === null || typeof obj !== "object") return obj as any;
+
+  if (Array.isArray(obj)) {
+    return obj.map((item) => remapKeysToSnake(item)) as any;
+  }
+
+  return Object.keys(obj).reduce((acc, key) => {
+    const snake_key = camelToSnakeCase(key);
+    const value = obj[key];
+    (acc as T)[snake_key as keyof typeof acc] =
+      value && typeof value === "object" && !(value instanceof Date)
+        ? remapKeysToSnake(value)
+        : value;
+    return acc;
+  }, {} as T);
+}
+
 //============================ Utility types ===================//
 type SnakeToCamel<S extends string> = S extends `${infer Head}_${infer Tail}`
   ? `${Head}${Capitalize<SnakeToCamel<Tail>>}`
   : S;
 
-type RemapKeys<T> = {
+type RemapKeysToCamel<T> = {
   [K in keyof T as K extends string ? SnakeToCamel<K> : K]: T[K] extends object
-    ? RemapKeys<T[K]>
+    ? RemapKeysToCamel<T[K]>
+    : T[K];
+};
+
+type CamelToSnake<S extends string> = S extends `${infer Head}${infer Tail}`
+  ? Tail extends Capitalize<Tail>
+    ? Tail extends ""
+      ? Head
+      : `${Head}_${Uncapitalize<CamelToSnake<Tail>>}`
+    : `${Head}${CamelToSnake<Tail>}`
+  : S;
+
+type RemapKeysToSnake<T> = {
+  [K in keyof T as K extends string ? CamelToSnake<K> : K]: T[K] extends object
+    ? RemapKeysToSnake<T[K]>
     : T[K];
 };
