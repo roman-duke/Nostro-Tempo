@@ -22,7 +22,9 @@ export const QuestionsRepository = {
     offset?: number;
     filter?: QuestionQuery["filter"];
   }): Promise<Question[]> {
-    const { filterClause, filterParams } = queryFilterBuilder({ filterObj: filter });
+    const { filterClause, filterParams } = queryFilterBuilder({
+      filterObj: filter,
+    });
 
     let sql = `
       SELECT
@@ -66,8 +68,14 @@ export const QuestionsRepository = {
     //============================ CODE SMELL ============================//
     const [results] = await query<QuestioRepositoryModel[]>(sql, filterParams);
 
-    const aggregatedResults = relationsBuilder(results, 'question_answers', 'options');
-    const transformedResults = (aggregatedResults as Question[]).map(remapKeysToCamel);
+    const aggregatedResults = relationsBuilder(
+      results,
+      "question_answers",
+      "options",
+    );
+    const transformedResults = (aggregatedResults as Question[]).map(
+      remapKeysToCamel,
+    );
     return transformedResults as Question[];
     //====================================================================//
   },
@@ -103,8 +111,14 @@ export const QuestionsRepository = {
        WHERE q.id = UUID_TO_BIN('${id}');`,
     );
 
-    const aggregatedResults = relationsBuilder(results, 'question_answers', 'options');
-    const transformedResults = (aggregatedResults).map(remapKeysToCamel) as Question[];
+    const aggregatedResults = relationsBuilder(
+      results,
+      "question_answers",
+      "options",
+    );
+    const transformedResults = aggregatedResults.map(
+      remapKeysToCamel,
+    ) as Question[];
     return transformedResults[0];
   },
 
@@ -136,8 +150,8 @@ export const QuestionsRepository = {
       `INSERT INTO questions_snapshots
       (id, category_id, name, description, media_url, media_type, question_type, difficulty, time_limit_ms, match_type, explanation_text, created_at)
       VALUES ()
-      `
-    )
+      `,
+    );
   },
 
   async update(id: string, body: Partial<Question>) {
@@ -167,10 +181,23 @@ export const QuestionsRepository = {
     );
   },
 
-  async countAll() {
-    const [result] = await query<DbCount[]>(
-      `SELECT COUNT(*) AS total FROM questions;`,
-    );
+  // Only counts the questions that have answer options
+  async countAll(filter?: QuestionQuery["filter"]) {
+    const { filterClause, filterParams } = queryFilterBuilder({
+      filterObj: filter,
+    });
+    const sql = `
+      SELECT COUNT(*) AS total
+      FROM (
+        SELECT DISTINCT questions.id
+        FROM questions
+        INNER JOIN question_answers
+              ON questions.id = question_answers.question_id
+        ${filterClause}
+      ) AS valid_questions
+    `;
+
+    const [result] = await query<DbCount[]>(sql, filterParams);
     return result[0].total;
   },
 };
