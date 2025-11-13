@@ -67,7 +67,6 @@ export const QuestionsRepository = {
     // is necessary in the short term. It has been excluded for now.
     //============================ CODE SMELL ============================//
     const [results] = await query<QuestioRepositoryModel[]>(sql, filterParams);
-
     const aggregatedResults = relationsBuilder(
       results,
       "question_answers",
@@ -145,14 +144,15 @@ export const QuestionsRepository = {
     return body.id;
   },
 
-  async insertIntoQuestionSnapshot(body: Question) {
-    await query(
-      `INSERT INTO questions_snapshots
-      (id, category_id, name, description, media_url, media_type, question_type, difficulty, time_limit_ms, match_type, explanation_text, created_at)
-      VALUES ()
-      `,
-    );
-  },
+  // TODO: Update function
+  // async insertIntoQuestionSnapshot(body: Question) {
+  //   await query(
+  //     `INSERT INTO questions_snapshots
+  //     (id, category_id, name, description, media_url, media_type, question_type, difficulty, time_limit_ms, match_type, explanation_text, created_at)
+  //     VALUES ()
+  //     `,
+  //   );
+  // },
 
   async update(id: string, body: Partial<Question>) {
     // TODO: utility function for remapping the keys of the object to snake case.

@@ -1,13 +1,14 @@
 import z from "zod";
 
 const baseTriviaSessionSchema = z.object({
+  id: z.uuidv4(),
   userId: z.uuidv4(),
   //------ We shall leave this as null for the time being -------//
   quizId: z.uuidv4().nullable(),
   //-------------------------------------------------------------//
   numOfQuestions: z.coerce.number(),
   difficultyLevel: z.enum(["EASY", "MEDIUM", "HARD"]),
-  categoryId: z.int().array(),
+  categoryIds: z.int().array(),
 });
 
 const createTimedTriviaSessionSchema = z.object({
@@ -22,9 +23,9 @@ const createUntimedTriviaSessionSchema = z.object({
   expiresAt: z.literal(null),
 });
 
-export const createTriviaSessionSchema = z.discriminatedUnion("isTimed", [
+export const createTriviaSessionClientSchema = z.discriminatedUnion("isTimed", [
   createTimedTriviaSessionSchema,
   createUntimedTriviaSessionSchema,
 ]);
 
-export type CreateTriviaSession = z.infer<typeof createTriviaSessionSchema>;
+export type CreateTriviaSessionClient = z.infer<typeof createTriviaSessionClientSchema>;
