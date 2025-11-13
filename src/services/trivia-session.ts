@@ -1,5 +1,8 @@
 import { v4 as uuidv4 } from "uuid";
-import { CreateTriviaSessionClient } from "../models/clientModels/trivia-session";
+import {
+  CreateTriviaSessionClient,
+  GradeTriviaSession,
+} from "../models/clientModels/trivia-session";
 import { TriviaSessionRepository } from "../repositories/trivia-session";
 import { QuestionsRepository } from "../repositories/questions";
 import {
@@ -15,7 +18,14 @@ export const triviaSessionService = {
   // Scenario 2: It is based on a pre-existing quiz.
   createTriviaSession: async (payload: CreateTriviaSessionClient) => {
     const sessionId = uuidv4();
-    const { userId = "a8f9856f-6232-410e-a29b-c64b79c5ff84", quizId, categoryIds, difficultyLevel, expiresAt="2025-11-13T14:05:59.248Z", ...rest } = payload;
+    const {
+      userId = "a8f9856f-6232-410e-a29b-c64b79c5ff84",
+      quizId,
+      categoryIds,
+      difficultyLevel,
+      expiresAt = "2025-11-13T14:05:59.248Z",
+      ...rest
+    } = payload;
 
     // First we need to fetch the categories that questions should be retrieved from
     const categories = await CategoriesRepository.findAll({ categoryIds });
@@ -96,11 +106,13 @@ export const triviaSessionService = {
 
       //====================================================//
       // TODO: Create new records in the quiz_questions table
-      await QuizRepository.insertIntoQuizQuestions(quizQuestions)
+      await QuizRepository.insertIntoQuizQuestions(quizQuestions);
       //====================================================//
 
       // Create new records in the session_users_answers table
-      await TriviaSessionRepository.insertIntoSessionUsersAnswers(sessionUsersAnswers);
+      await TriviaSessionRepository.insertIntoSessionUsersAnswers(
+        sessionUsersAnswers,
+      );
 
       //====================================================//
       // TODO: Create a record in the session_users_summary table for this particular user
@@ -109,24 +121,80 @@ export const triviaSessionService = {
         sessionId,
         userId,
         totalQuestions: rest.numOfQuestions || 10,
-      }
-      await TriviaSessionRepository.insertIntoSessionUsersSummary(sessionUserSummaryRecord);
+      };
+      await TriviaSessionRepository.insertIntoSessionUsersSummary(
+        sessionUserSummaryRecord,
+      );
       //====================================================//
 
       // Add the question order to the questions retrieved.
-      return questionsBank.map((val, idx) => {
-        let transformedVal = {};
+      const quizQuestionsClientBank = questionsBank.map((val, idx) => {
+        //========================= Potential source of bug =======================//
+        const transformedVal = {
+          ...val,
+          questionOrder: quizQuestions[idx].questionOrder,
+        };
+        //========================================================================//
 
-        if (val.id === quizQuestions[idx].questionSnapshotId) {
-          transformedVal = {
-            ...val,
-            questionOrder: quizQuestions[idx].questionOrder
-          }
-
-          return transformedVal;
-        }
+        return transformedVal;
       });
+
+      return {
+        sessionId,
+        quizId: validQuizId,
+        quizQuestions: quizQuestionsClientBank,
+      };
     }
+  },
+
+  // Grade user's submitted answers
+  gradeTriviaSession: async (payload: GradeTriviaSession) => {
+    const questionSnapshotIds = [] as string[];
+    const questionSnapshotVersions = [] as string[];
+
+    //============================ Code smell =============================//
+    payload.userAnswers.forEach((userAnswer) => {
+      questionSnapshotIds.push(userAnswer.questionId);
+      questionSnapshotVersions.push(userAnswer.questionVersion.toString());
+    });
+    //=====================================================================//
+
+    // Get all the questions contained in the quiz for this session
+    const quizQuestions = await QuestionsRepository.findAllFromSnapshot({
+      question_snapshot_version: questionSnapshotVersions,
+      question_snapshot_id: questionSnapshotIds,
+    });
+
+    //====== Possible code smell: How much performance is compromised =====//
+    // by doing this
+    const quizQuestionsWithValidAnswers = quizQuestions.map((q) => {
+      return {
+        ...q,
+        options: q.options.filter((val) => val.isCorrect),
+      };
+    });
+    //=====================================================================//
+
+
+    // Begin grading process with the actual answers
+    let totalScore = 0;
+    payload.userAnswers.forEach((userAnswer) => {
+      // Code smell: Question could, for some reason, not exist
+      const q = quizQuestionsWithValidAnswers.find(
+        (q) => q.id === userAnswer.questionId,
+      );
+      if (userAnswer.selectedAnswer === q?.options[0].answerText) {
+        totalScore += 1;
+      }
+    });
+    console.log(quizQuestions);
+
+    console.log(`Total Score for user ${payload.userId} --> ${totalScore}/${payload.userAnswers.length}`);
+
+    // TODO: Update the session_users_answers table with correct info (time_spent_ms, is_correct, etc).
+
+    // TODO: Update the session_users_summary table with correct info (total_questions, correct_answers, etc).
+    return "Ore no nawa Eren Jaeger";
   },
 };
 
