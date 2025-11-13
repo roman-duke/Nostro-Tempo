@@ -1,7 +1,7 @@
 import { RowDataPacket } from "mysql2";
 import { query } from "../db/connection";
 import { CreateQuestion, QuestionQuery } from "../models/clientModels/question";
-import { Question } from "../models/domainModels/question";
+import { Question, QuestionSnapshot } from "../models/domainModels/question";
 import camelToSnakeCase, {
   remapKeysToCamel,
   snakeToCamel,
@@ -11,6 +11,7 @@ import { queryFilterBuilder } from "../utils/buildQueryParams";
 import relationsBuilder from "../utils/relationsGenerator";
 
 type QuestioRepositoryModel = Question & RowDataPacket;
+type QuestionSnapshotRepositoryModel = QuestionSnapshot & RowDataPacket;
 
 export const QuestionsRepository = {
   async findAll({
@@ -63,8 +64,9 @@ export const QuestionsRepository = {
             ON q.id = qa.question_id
     `;
 
-    // TODO: Contemplate if validation of the data received from the db
-    // is necessary in the short term. It has been excluded for now.
+    // Code smell: The relationsBuilder does not support deeply nested objects for now
+    // The only form of object-keys remapping that happens for now is the simple casing
+    // (camel -> snake)
     //============================ CODE SMELL ============================//
     const [results] = await query<QuestioRepositoryModel[]>(sql, filterParams);
     const aggregatedResults = relationsBuilder(
@@ -119,6 +121,68 @@ export const QuestionsRepository = {
       remapKeysToCamel,
     ) as Question[];
     return transformedResults[0];
+  },
+
+  async findAllFromSnapshot(filter: {
+    question_snapshot_id: string[];
+    question_snapshot_version: string[];
+  }) {
+    const { filterClause, filterParams } = queryFilterBuilder({
+      filterObj: filter
+    });
+
+    let sql = `
+      SELECT
+        BIN_TO_UUID(qs.id) AS id,
+        qs.snapshot_version AS version,
+        category_id,
+        name,
+        description,
+        media_url,
+        media_type,
+        question_type,
+        difficulty,
+        match_type,
+        time_limit_ms,
+        explanation_text,
+        status,
+        BIN_TO_UUID(created_by) AS created_by,
+        qs.created_at,
+        qs.updated_at,
+        BIN_TO_UUID(qa_s.id) AS question_answers_id,
+        qa_s.version AS question_answers_version,
+        qa_s.answer_text AS question_answers_answer_text,
+        qa_s.is_correct AS question_answers_is_correct,
+        qa_s.created_at AS question_answers_created_at,
+        qa_s.updated_at AS question_answers_updated_at
+      FROM (
+        SELECT DISTINCT qs.id
+        FROM questions_snapshots as qs
+        INNER JOIN question_answers_snapshots as qa_s
+              ON qs.id = qa_s.question_snapshot_id
+        ${filterClause}
+      ) AS limited
+      INNER JOIN questions_snapshots qs ON qs.id = limited.id
+      INNER JOIN question_answers qa_s
+            ON qs.id = qa_s.question_snapshot_id
+    `;
+
+    const [results] = await query<QuestionSnapshotRepositoryModel[]>(
+      sql,
+      filterParams,
+    );
+
+    const aggregatedResults = relationsBuilder(
+      results,
+      "question_answers",
+      "options",
+    );
+
+    const transformedResults = (aggregatedResults as QuestionSnapshot[]).map(
+      remapKeysToCamel,
+    );
+
+    return transformedResults as QuestionSnapshot[];
   },
 
   async insert(body: CreateQuestion & { id: string }) {

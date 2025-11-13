@@ -19,7 +19,17 @@ export const questionSchema = z.object({
   createdBy: z.uuidv4(),
   createdAt: z.date(),
   updatedAt: z.date(),
-  options: questionAnswersSchema,
+  options: questionAnswersSchema.array(),
 });
-
 export type Question = z.infer<typeof questionSchema>;
+
+
+const questionSnapshotSchema = questionSchema
+  .omit({
+    updatedAt: true,
+    options: true,
+  })
+  .extend({
+    options: questionAnswersSchema.omit({ updatedAt: true }).array(),
+  });
+export type QuestionSnapshot = z.infer<typeof questionSnapshotSchema>;
