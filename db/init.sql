@@ -138,15 +138,6 @@ CREATE TABLE trivia_sessions (
   CONSTRAINT fk_trivia_sessions_quizzes FOREIGN KEY (quiz_id) REFERENCES quizzes(id)
 );
 
--- CREATE TABLE session_questions (
---   session_id BINARY(16) NOT NULL,
---   question_snapshot_id BINARY(16) NOT NULL,
---   question_snapshot_version INT NOT NULL,
---   question_order INT NOT NULL,
---   CONSTRAINT fk_sq_question FOREIGN KEY (question_snapshot_id, question_snapshot_version) REFERENCES questions_snapshots(id, snapshot_version),
---   CONSTRAINT fk_sq_session FOREIGN KEY (session_id) REFERENCES trivia_sessions(id)
--- );
-
 CREATE TABLE session_users_answers (
   session_id BINARY(16) NOT NULL,
   user_id BINARY(16) NOT NULL,
