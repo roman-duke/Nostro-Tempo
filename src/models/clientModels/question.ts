@@ -1,6 +1,7 @@
 import z from "zod";
 import { questionSchema } from "../domainModels/question";
-import { questionAnswersClientSchema } from "./question-answers";
+import { remapKeysToSnake } from "../../utils/variableUtils";
+import { questionAnswersSchema } from "../domainModels/question-answers";
 
 // Define Schemas for the Question Model in the Application Layer
 const createBaseQuestionSchema = z.object({
@@ -39,32 +40,34 @@ export const partialQuestionSchema = z.discriminatedUnion("questionType", [
 export type PartialQuestion = z.infer<typeof partialQuestionSchema>;
 
 // Define schemas for the query options
+const questionsFilterSchema = z.object({
+  categoryId: z.int().array().optional(),
+  ...questionSchema
+    .omit({
+      id: true,
+      options: true,
+      categoryId: true,
+      description: true,
+      explanationText: true,
+      // createdAt: true,
+      // updatedAt: true,
+    })
+    .partial().shape,
+});
+
 export const questionsQuerySchema = z.object({
   page: z.coerce.number().positive().optional().default(1),
   limit: z.coerce.number().positive().optional().default(10),
-  filter: z
-    .object({
-      categoryIds: z.int().array().optional(),
-      ...questionSchema
-        .omit({
-          id: true,
-          options: true,
-          categoryId: true,
-          description: true,
-          explanationText: true,
-          // createdAt: true,
-          // updatedAt: true,
-        })
-        .partial().shape,
-    })
-    .optional(),
+  filter: z.object({
+    ...remapKeysToSnake(questionsFilterSchema.shape)
+  }).optional(),
   // orderBy: z.object
 });
 export type QuestionQuery = z.infer<typeof questionsQuerySchema>;
 
-const questionWithOptionsSchema = z.object({
+export const questionWithOptionsSchema = z.object({
   ...questionSchema.shape,
-  options: questionAnswersClientSchema.array(),
+  options:  questionAnswersSchema.array(),
 });
 
 // Strip out unwanted options
