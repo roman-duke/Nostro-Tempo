@@ -6,7 +6,6 @@ import {
   createTriviaSessionSchema,
   CreateTriviaSessionUserAnswer,
   createTriviaSessionUserAnswerSchema,
-  // TriviaSession,
 } from "../models/domainModels/trivia-session";
 
 export const TriviaSessionRepository = {

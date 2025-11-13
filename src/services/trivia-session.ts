@@ -113,7 +113,19 @@ export const triviaSessionService = {
       await TriviaSessionRepository.insertIntoSessionUsersSummary(sessionUserSummaryRecord);
       //====================================================//
 
-      return questionsBank;
+      // Add the question order to the questions retrieved.
+      return questionsBank.map((val, idx) => {
+        let transformedVal = {};
+
+        if (val.id === quizQuestions[idx].questionSnapshotId) {
+          transformedVal = {
+            ...val,
+            questionOrder: quizQuestions[idx].questionOrder
+          }
+
+          return transformedVal;
+        }
+      });
     }
   },
 };
